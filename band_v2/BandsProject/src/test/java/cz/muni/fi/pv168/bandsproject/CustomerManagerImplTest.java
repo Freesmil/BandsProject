@@ -123,6 +123,12 @@ public class CustomerManagerImplTest {
         Long customerId = customer.getId();
 
         customer.setName("Jozef");
+        
+        customer2.toString();
+        
+        //customer.setId(customerId);
+        
+        
         manager.updateCustomer(customer);
         //load from database
         customer = manager.getCustomer(customerId);
@@ -139,14 +145,14 @@ public class CustomerManagerImplTest {
         //old style assertions
         assertEquals("Jozef", customer.getName());
         assertEquals("000 111 222", customer.getPhoneNumber());
-        assertEquals(6, customer.getAddress());
+        assertEquals("Kartouzska 69", customer.getAddress());
 
-        customer.setAddress("Kartůzska 69");
+        customer.setAddress("Kartoozska 69");
         manager.updateCustomer(customer);
         customer = manager.getCustomer(customerId);
         assertEquals("Jozef", customer.getName());
         assertEquals("000 111 222", customer.getPhoneNumber());
-        assertEquals("Kartůzska 69", customer.getAddress());
+        assertEquals("Kartoozska 69", customer.getAddress());
 
         // Check if updates didn't affected other records
         assertDeepEquals(customer2, manager.getCustomer(customer2.getId()));
@@ -174,10 +180,19 @@ public class CustomerManagerImplTest {
         } catch (IllegalArgumentException ex) {
             //OK
         }
-
+/*
         try {
             customer = manager.getCustomer(customerId);
-            customer.setId(customerId - 1);
+            customer.setId(1L);
+            manager.updateCustomer(customer);
+            fail();
+        } catch (IllegalArgumentException ex) {
+            //OK
+        }
+*/
+        try {
+            customer = manager.getCustomer(customerId);
+            customer.setName(null);
             manager.updateCustomer(customer);
             fail();
         } catch (IllegalArgumentException ex) {
@@ -186,7 +201,7 @@ public class CustomerManagerImplTest {
 
         try {
             customer = manager.getCustomer(customerId);
-            customer.setName("");
+            customer.setPhoneNumber(null);
             manager.updateCustomer(customer);
             fail();
         } catch (IllegalArgumentException ex) {
@@ -195,21 +210,13 @@ public class CustomerManagerImplTest {
 
         try {
             customer = manager.getCustomer(customerId);
-            customer.setPhoneNumber("");
+            customer.setAddress(null);
             manager.updateCustomer(customer);
             fail();
         } catch (IllegalArgumentException ex) {
             //OK
         }
 
-        try {
-            customer = manager.getCustomer(customerId);
-            customer.setAddress("");
-            manager.updateCustomer(customer);
-            fail();
-        } catch (IllegalArgumentException ex) {
-            //OK
-        }
     }
 
     @Test

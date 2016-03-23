@@ -53,6 +53,7 @@ public class CustomerManagerImpl implements CustomerManager {
             st.setString(1, customer.getName());
             st.setString(2, customer.getPhoneNumber());
             st.setString(3, customer.getAddress());
+            st.setLong(4, customer.getId());
             int count = st.executeUpdate();
             if(count == 0) {
                 throw new EntityNotFoundException("Customer " + customer + " was not found in database!");

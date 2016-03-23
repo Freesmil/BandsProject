@@ -35,7 +35,7 @@ public class BandManagerImplTest {
         try (Connection connection = dataSource.getConnection()) {
             connection.prepareStatement("CREATE TABLE BAND ("
                     + "id bigint primary key generated always as identity,"
-                    + "name VARCHAR(20),"
+                    + "name VARCHAR(40),"
                     + "styles VARCHAR(50),"
                     + "region VARCHAR(30),"
                     + "pricePerHour Double,"

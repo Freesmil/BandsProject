@@ -51,4 +51,9 @@ public class Customer {
     public void setAddress(String address) {
         this.address = address;
     }
+    
+    @Override
+    public String toString(){
+        return "Customer: ID="+this.getId()+" name="+this.getName()+" phoneNumber="+this.getPhoneNumber()+" address="+this.getAddress();
+    }
 }
