@@ -35,9 +35,9 @@ public class BandManagerImplTest {
         try (Connection connection = dataSource.getConnection()) {
             connection.prepareStatement("CREATE TABLE BAND ("
                     + "id bigint primary key generated always as identity,"
-                    + "name String,"
-                    + "styles String,"
-                    + "region Region,"
+                    + "name VARCHAR(20),"
+                    + "styles VARCHAR(50),"
+                    + "region VARCHAR(30),"
                     + "pricePerHour Double,"
                     + "rate Double)").executeUpdate();
         }
@@ -233,7 +233,7 @@ public class BandManagerImplTest {
         assertNull(instance.findBandById(1L));
 
         //null id
-        expectedException.expect(IllegalArgumentException.class);
+        expectedException.expect(NullPointerException.class);
         instance.findBandById(null);
 
         //null id

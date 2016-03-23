@@ -107,7 +107,7 @@ public class BandManagerImpl implements BandManager{
     public Band findBandById(Long id) throws ServiceFailureException {
         try (Connection connection = dataSource.getConnection();
                 PreparedStatement st = connection.prepareStatement(
-                        "SELECT id,name,styles,region,pricePerHour,rate FROM BAND WHERE id = ?")) {
+                        "SELECT * FROM BAND WHERE id = ?")) {
             st.setLong(1, id);
             ResultSet rs = st.executeQuery();
 

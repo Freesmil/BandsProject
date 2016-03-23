@@ -1,9 +1,21 @@
 package cz.muni.fi.pv168.bandsproject;
 
+import org.apache.derby.jdbc.EmbeddedDataSource;
+import org.junit.After;
+import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.ExpectedException;
 
+import javax.sql.DataSource;
+import java.sql.Connection;
+import java.sql.SQLException;
+
+import static org.hamcrest.core.Is.is;
+import static org.hamcrest.core.IsEqual.equalTo;
+import static org.hamcrest.core.IsNot.not;
+import static org.hamcrest.core.IsSame.sameInstance;
 import static org.junit.Assert.*;
-
 /**
  * Created by Lenka on 18.3.2016.
  */
