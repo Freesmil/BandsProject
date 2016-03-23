@@ -16,13 +16,13 @@ public interface BandManager {
     
     public Band findBandById(Long id);
     
-    public List<Band> findBandByBandName(String name);
+    public List<Band> findBandByName(String name);
     
     public List<Band> findBandByStyles(List<Style> styles);
     
     public List<Band> findBandByRegion(List<Region> regions);
     
-    public List<Band> findBandbyPrice(Double from, Double to);
+    public List<Band> findBandbyPriceRange(Double from, Double to);
     
     public List<Band> findBandByRate(Double from);
 }

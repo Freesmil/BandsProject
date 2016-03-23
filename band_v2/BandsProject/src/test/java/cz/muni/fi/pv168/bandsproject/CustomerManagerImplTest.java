@@ -65,7 +65,6 @@ public class CustomerManagerImplTest {
         assertThat("saved customer has null ID", customer.getId(), is(not(equalTo(null))));
 
         Customer result = manager.getCustomer(customerId);
-        assertThat("loaded user is different from the new one", result, is(equalTo(customer)));
         assertThat("loaded user is the same instance", result, is(not(sameInstance(customer))));
         
         assertDeepEquals(customer, result);

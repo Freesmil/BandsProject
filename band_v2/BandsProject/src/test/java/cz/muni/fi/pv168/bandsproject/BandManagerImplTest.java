@@ -74,7 +74,6 @@ public class BandManagerImplTest {
         assertNotNull(bandId);
         
         Band result = instance.findBandById(bandId);
-        assertEquals(band, result);
         assertNotSame(band, result);
         assertDeepEquals(band, result);
         
@@ -221,7 +220,6 @@ public class BandManagerImplTest {
         Long bandId = band.getId();
         
         Band result = instance.findBandById(bandId);
-        assertEquals(band, result);
         assertDeepEquals(band, result);
     }
         
@@ -242,10 +240,10 @@ public class BandManagerImplTest {
     }
     
     /**
-     * Test of findBandByBandName method, of class BandManagerImpl.
+     * Test of findBandByName method, of class BandManagerImpl.
      */
     @Test   //TODO
-    public void testFindBandByBandName() {
+    public void testFindBandByName() {
 
     }
 
@@ -266,10 +264,10 @@ public class BandManagerImplTest {
     }
 
     /**
-     * Test of findBandbyPrice method, of class BandManagerImpl.
+     * Test of findBandbyPriceRange method, of class BandManagerImpl.
      */
     @Test   //TODO
-    public void testFindBandbyPrice() {
+    public void testFindBandbyPriceRange() {
 
     }
 
@@ -306,11 +304,7 @@ public class BandManagerImplTest {
         assertEquals(expected.getPricePerHour(), actual.getPricePerHour());
         assertEquals(expected.getRate(), actual.getRate());
         assertEquals(expected.getStyles().size(), actual.getStyles().size());
-        for(int i = 0; i < expected.getStyles().size(); i++) {
-            Style exp = expected.getStyles().get(i);
-            Style act = actual.getStyles().get(i);
-            assertEquals(exp, act);
-        }
+        assertTrue(expected.getStyles().containsAll(actual.getStyles()) && actual.getStyles().containsAll(expected.getStyles()));
     }
     
     /**

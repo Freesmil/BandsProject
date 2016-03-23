@@ -129,7 +129,7 @@ public class BandManagerImpl implements BandManager{
     }
 
     @Override
-    public List<Band> findBandByBandName(String name) throws ServiceFailureException {
+    public List<Band> findBandByName(String name) throws ServiceFailureException {
         try (Connection connection = dataSource.getConnection();
                 PreparedStatement st = connection.prepareStatement(
                         "SELECT id,name,styles,region,pricePerHour,rate FROM BAND WHERE name LIKE ?")) {
@@ -157,7 +157,7 @@ public class BandManagerImpl implements BandManager{
     }
 
     @Override
-    public List<Band> findBandbyPrice(Double from, Double to) throws ServiceFailureException {
+    public List<Band> findBandbyPriceRange(Double from, Double to) throws ServiceFailureException {
         try (Connection connection = dataSource.getConnection();
                 PreparedStatement st = connection.prepareStatement(
                         "SELECT id,name,styles,region,pricePerHour,rate FROM BAND "
@@ -274,7 +274,7 @@ public class BandManagerImpl implements BandManager{
     private String convertEnumToString(List<Style> styles) {
         String str = "";
         for(Style style : styles) {
-            str = style.toString() + " ";
+            str += style.toString() + " ";
         }
         return str;
     }

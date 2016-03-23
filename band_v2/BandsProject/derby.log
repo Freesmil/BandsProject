@@ -1,13 +1,13 @@
 ----------------------------------------------------------------
-Wed Mar 23 01:01:51 CET 2016:
-Booting Derby version The Apache Software Foundation - Apache Derby - 10.12.1.1 - (1704137): instance a816c00e-0153-a0c7-0760-000002e57d28 
-on database directory memory:E:\Dokumenty\Palma\FI\PV168\git\band_v2\BandsProject\bandmgr-test with class loader sun.misc.Launcher$AppClassLoader@75b84c92 
-Loaded from file:/C:/Users/Tom%c3%a1%c5%a1/.m2/repository/org/apache/derby/derby/10.12.1.1/derby-10.12.1.1.jar
+Wed Mar 23 10:56:08 CET 2016:
+Booting Derby version The Apache Software Foundation - Apache Derby - 10.12.1.1 - (1704137): instance a816c00e-0153-a2e7-1b0b-00000dc79d50 
+on database directory memory:/home/xsevcov/PV168/git/BandsProject/band_v2/BandsProject/bandmgr-test with class loader sun.misc.Launcher$AppClassLoader@75b84c92 
+Loaded from file:/home/xsevcov/.m2/repository/org/apache/derby/derby/10.12.1.1/derby-10.12.1.1.jar
 java.vendor=Oracle Corporation
-java.runtime.version=1.8.0_65-b17
-user.dir=E:\Dokumenty\Palma\FI\PV168\git\band_v2\BandsProject
-os.name=Windows 10
+java.runtime.version=1.8.0_66-b17
+user.dir=/home/xsevcov/PV168/git/BandsProject/band_v2/BandsProject
+os.name=Linux
 os.arch=amd64
-os.version=10.0
+os.version=3.13.0-83-generic
 derby.system.home=null
 Database Class Loader started - derby.database.classpath=''
