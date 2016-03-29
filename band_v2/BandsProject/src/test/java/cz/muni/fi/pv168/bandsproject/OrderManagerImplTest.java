@@ -126,17 +126,149 @@ public class OrderManagerImplTest {
 
     @Test
     public void testUpdateOrder() throws Exception {
-
+        List<Style> styles = new ArrayList<>();
+        styles.add(Style.metal);
+        styles.add(Style.rock);
+        Band band = newBand("Eufory", styles, Region.slovensko, 200.00, 7.4);
+        managerBand.createBand(band);
+        
+        Band band2 = newBand("Slize", styles, Region.slovensko, 200.00, 8.0);
+        managerBand.createBand(band2);
+        
+        Customer customer = newCustomer("Pepa", "666 123 456", "Kartouzska 69");
+        managerCustomer.createCustomer(customer);
+        
+        Customer customer2 = newCustomer("Lenka si to cte :O", "666 555 456", "Kartouzska 69");
+        managerCustomer.createCustomer(customer2);
+        
+        
+        Order order = newOrder(band, customer, "01.02.2016", Region.jihocesky, 2);
+        managerOrder.createOrder(order);
+        Long orderId = order.getId();
+        
+        Order order2 = newOrder(band, customer, "01.05.2016", Region.jihocesky, 8);
+        managerOrder.createOrder(order2);
+        
+        
+        // ---- Duration
+        order.setDuration(50);
+        
+        managerOrder.updateOrder(order);
+        
+        order = managerOrder.findOrderById(orderId);
+        
+        assertEquals(band.getId(), order.getBand().getId());
+        assertEquals(customer.getId(), order.getCustomer().getId());
+        assertEquals("01.02.2016", order.getDate().toString());
+        assertEquals(Region.jihocesky, order.getPlace());
+        assertEquals(50, order.getDuration());
+        
+        
+        // ---- Place
+        order.setPlace(Region.jihomoravsky);
+        
+        managerOrder.updateOrder(order);
+        
+        order = managerOrder.findOrderById(orderId);
+        
+        assertEquals(band.getId(), order.getBand().getId());
+        assertEquals(customer.getId(), order.getCustomer().getId());
+        assertEquals("01.02.2016", order.getDate().toString());
+        assertEquals(Region.jihomoravsky, order.getPlace());
+        assertEquals(50, order.getDuration());
+        
+        
+        // ---- Date
+        DateFormat format = new SimpleDateFormat("dd.mm.yyyy");
+        Date date = format.parse("08.08.2016");
+        order.setDate(date);
+        
+        managerOrder.updateOrder(order);
+        
+        order = managerOrder.findOrderById(orderId);
+        
+        assertEquals(band.getId(), order.getBand().getId());
+        assertEquals(customer.getId(), order.getCustomer().getId());
+        assertEquals("08.08.2018", order.getDate().toString());
+        assertEquals(Region.jihomoravsky, order.getPlace());
+        assertEquals(50, order.getDuration());
+        
+        
+        // ---- Customer
+        order.setCustomer(customer2);
+        
+        managerOrder.updateOrder(order);
+        
+        order = managerOrder.findOrderById(orderId);
+        
+        assertEquals(band.getId(), order.getBand().getId());
+        assertEquals(customer2.getId(), order.getCustomer().getId());
+        assertEquals("08.08.2018", order.getDate().toString());
+        assertEquals(Region.jihomoravsky, order.getPlace());
+        assertEquals(50, order.getDuration());
+        
+        
+        // ---- Band
+        order.setBand(band2);
+        
+        managerOrder.updateOrder(order);
+        
+        order = managerOrder.findOrderById(orderId);
+        
+        assertEquals(band2.getId(), order.getBand().getId());
+        assertEquals(customer2.getId(), order.getCustomer().getId());
+        assertEquals("08.08.2018", order.getDate().toString());
+        assertEquals(Region.jihomoravsky, order.getPlace());
+        assertEquals(50, order.getDuration());
+        
+        // --- 
+        assertDeepEquals(order2, managerOrder.findOrderById(order2.getId()));
     }
 
     @Test
     public void testDeleteOrder() throws Exception {
+        List<Style> styles = new ArrayList<>();
+        styles.add(Style.metal);
+        styles.add(Style.rock);
+        Band band = newBand("Eufory", styles, Region.slovensko, 200.00, 7.4);
+        managerBand.createBand(band);
+        
+        Customer customer = newCustomer("Pepa", "666 123 456", "Kartouzska 69");
+        managerCustomer.createCustomer(customer);
+        
+        Order order = newOrder(band, customer, "01.02.2016", Region.jihocesky, 2);
+        managerOrder.createOrder(order);
+        
+        Order order2 = newOrder(band, customer, "01.05.2016", Region.jihocesky, 8);
+        managerOrder.createOrder(order2);
+        
+        
+        assertNotNull(managerOrder.findOrderById(order.getId()));
+        assertNotNull(managerOrder.findOrderById(order2.getId()));
+        
+        managerOrder.deleteOrder(order);
 
+        assertNull(managerOrder.findOrderById(order.getId()));
+        assertNotNull(managerOrder.findOrderById(order2.getId()));
     }
 
     @Test
     public void testFindOrderById() throws Exception {
-
+        List<Style> styles = new ArrayList<>();
+        styles.add(Style.metal);
+        styles.add(Style.rock);
+        Band band = newBand("Eufory", styles, Region.slovensko, 200.00, 7.4);
+        managerBand.createBand(band);
+        
+        Customer customer = newCustomer("Pepa", "666 123 456", "Kartouzska 69");
+        managerCustomer.createCustomer(customer);
+        
+        Order order = newOrder(band, customer, "01.02.2016", Region.jihocesky, 2);
+        managerOrder.createOrder(order);
+        Long orderId = order.getId();
+        
+        Order result = managerOrder.findOrderById(orderId);
+        assertDeepEquals(order, result);
     }
 
     @Test

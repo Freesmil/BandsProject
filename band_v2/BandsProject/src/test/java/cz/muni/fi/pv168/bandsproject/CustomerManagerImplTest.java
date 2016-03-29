@@ -122,12 +122,8 @@ public class CustomerManagerImplTest {
         manager.createCustomer(customer2);
         Long customerId = customer.getId();
 
+        
         customer.setName("Jozef");
-        
-        customer2.toString();
-        
-        //customer.setId(customerId);
-        
         
         manager.updateCustomer(customer);
         //load from database
@@ -180,16 +176,7 @@ public class CustomerManagerImplTest {
         } catch (IllegalArgumentException ex) {
             //OK
         }
-/*
-        try {
-            customer = manager.getCustomer(customerId);
-            customer.setId(1L);
-            manager.updateCustomer(customer);
-            fail();
-        } catch (IllegalArgumentException ex) {
-            //OK
-        }
-*/
+
         try {
             customer = manager.getCustomer(customerId);
             customer.setName(null);

@@ -147,7 +147,57 @@ public class BandManagerImplTest {
      */
     @Test   //TODO
     public void testUpdateBand() {
-
+        List<Style> styles = new ArrayList<>();
+        styles.add(Style.rock);
+        Band band = newBand("Eufory", styles, Region.slovensko, 330.30, 6.5);
+        instance.createBand(band);
+        
+        Band band2 = newBand("Slize", styles, Region.zahranici, 30.30, 60.5);
+        instance.createBand(band2);
+        
+        Long bandId = band.getId();
+        
+        // --- Name
+        band.setBandName("Five Live");
+        instance.updateBand(band);
+        
+        band = instance.findBandById(bandId);
+        
+        assertEquals("Five Live", band.getName());
+        assertEquals(styles, band.getStyles());
+        assertEquals(Region.slovensko, band.getRegion());
+        //assertEquals(330.30, band.getPricePerHour());
+        //assertEquals(60.5, band.getRate());
+        
+        
+        // --- Styles
+        styles.add(Style.metal);
+        band.setStyles(styles);
+        instance.updateBand(band);
+        
+        band = instance.findBandById(bandId);
+        
+        assertEquals("Five Live", band.getName());
+        assertEquals(styles, band.getStyles());
+        assertEquals(Region.slovensko, band.getRegion());
+        //assertEquals(330.30, band.getPricePerHour());
+        //assertEquals(60.5, band.getRate());
+        
+        
+        // --- Region
+        band.setRegion(Region.karlovarsky);
+        instance.updateBand(band);
+        
+        band = instance.findBandById(bandId);
+        
+        assertEquals("Five Live", band.getName());
+        assertEquals(styles, band.getStyles());
+        assertEquals(Region.karlovarsky, band.getRegion());
+        //assertEquals(330.30, band.getPricePerHour());
+        //assertEquals(60.5, band.getRate());
+        
+        // --- 
+        assertDeepEquals(band2, instance.findBandById(band2.getId()));
     }
 
     /**
