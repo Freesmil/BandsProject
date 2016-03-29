@@ -2,7 +2,6 @@ package cz.muni.fi.pv168.bandsproject;
 
 import javax.sql.DataSource;
 import java.sql.*;
-import java.util.Calendar;
 import java.util.List;
 
 /**
@@ -16,7 +15,7 @@ public class OrderManagerImpl implements OrderManager{
         this.dataSource = dataSource;
     }
 
-    @Override //// TODO
+    @Override 
     public void createOrder(Order order) throws ServiceFailureException {
         validate(order);
         if (order.getId() != null) {
@@ -30,7 +29,7 @@ public class OrderManagerImpl implements OrderManager{
 
             st.setString(1, order.getCustomer().toString());
             st.setString(2, order.getBand().toString());
-            //st.setDate(3, order.getDate());
+            st.setString(3, order.getDate().toString());
             st.setInt(4, order.getPlace().ordinal());
             st.setInt(5, order.getDuration());
             int addedRows = st.executeUpdate();
@@ -46,7 +45,7 @@ public class OrderManagerImpl implements OrderManager{
         }
     }
 
-    @Override //// TODO
+    @Override
     public void updateOrder(Order order) throws ServiceFailureException {
         validate(order);
         if(order.getId() == null) {
@@ -57,7 +56,7 @@ public class OrderManagerImpl implements OrderManager{
                      "UPDATE ORDER SET customer = ?,band = ?,date = ?,place = ?,duration = ? WHERE id = ?")){
             st.setString(1, order.getCustomer().toString());
             st.setString(2, order.getBand().toString());
-            //st.setDate(3, order.getDate());
+            st.setString(3, order.getDate().toString());
             st.setInt(4, order.getPlace().ordinal());
             st.setInt(5, order.getDuration());
             st.setLong(6, order.getId());
@@ -152,13 +151,13 @@ public class OrderManagerImpl implements OrderManager{
      * @param rs
      * @return
      * @throws SQLException
-     */ //// TODO
+     */ 
     private Order resultSetToOrder(ResultSet rs) throws SQLException {
         Order order = new Order();
         order.setId(rs.getLong("id"));
-        //order.setCustomer();
-        //order.setBand();
-        //order.setDate();
+        order.setCustomer(new CustomerManagerImpl(dataSource).getCustomer(rs.getLong("idCustomer")));
+        order.setBand(new BandManagerImpl(dataSource).findBandById(rs.getLong("idBand")));
+        order.setDate(rs.getDate("date"));
         order.setPlace(Region.values()[rs.getInt("region")]);
         order.setDuration(rs.getInt("duration"));
         return order;
