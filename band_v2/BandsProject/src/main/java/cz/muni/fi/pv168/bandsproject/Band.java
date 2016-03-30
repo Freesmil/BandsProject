@@ -78,4 +78,10 @@ public class Band {
     public void setRate(Double rate) {
         this.rate = rate;
     }
+    
+    public String toString() {
+        String ret = "id: " + id + ", band name: " + bandName + ", styles: ";
+        ret += styles.toString();
+        return ret + "region: " + region.toString() + ", price: " + pricePerHour + ", rate: " + rate;
+    }
 }

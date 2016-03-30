@@ -1,15 +1,15 @@
 -------------------------------------------------------------------------------
 Test set: cz.muni.fi.pv168.bandsproject.BandManagerImplTest
 -------------------------------------------------------------------------------
-Tests run: 14, Failures: 1, Errors: 0, Skipped: 0, Time elapsed: 2.334 sec <<< FAILURE!
-testUpdateBand(cz.muni.fi.pv168.bandsproject.BandManagerImplTest)  Time elapsed: 1.705 sec  <<< FAILURE!
+Tests run: 14, Failures: 1, Errors: 0, Skipped: 0, Time elapsed: 1.238 sec <<< FAILURE!
+testUpdateBand(cz.muni.fi.pv168.bandsproject.BandManagerImplTest)  Time elapsed: 0.889 sec  <<< FAILURE!
 java.lang.AssertionError: expected:<2> but was:<1>
 	at org.junit.Assert.fail(Assert.java:88)
 	at org.junit.Assert.failNotEquals(Assert.java:834)
 	at org.junit.Assert.assertEquals(Assert.java:645)
 	at org.junit.Assert.assertEquals(Assert.java:631)
-	at cz.muni.fi.pv168.bandsproject.BandManagerImplTest.assertDeepEquals(BandManagerImplTest.java:356)
-	at cz.muni.fi.pv168.bandsproject.BandManagerImplTest.testUpdateBand(BandManagerImplTest.java:200)
+	at cz.muni.fi.pv168.bandsproject.BandManagerImplTest.assertDeepEquals(BandManagerImplTest.java:388)
+	at cz.muni.fi.pv168.bandsproject.BandManagerImplTest.testUpdateBand(BandManagerImplTest.java:202)
 	at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
 	at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:62)
 	at sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43)

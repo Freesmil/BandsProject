@@ -3,6 +3,8 @@ package cz.muni.fi.pv168.bandsproject;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Objects;
@@ -292,9 +294,39 @@ public class BandManagerImplTest {
     /**
      * Test of findBandByName method, of class BandManagerImpl.
      */
-    @Test   //TODO
+    @Test
     public void testFindBandByName() {
+        assertTrue(instance.findBandByName("Desmod").isEmpty());
+        
+        List<Style> styles = new ArrayList<>();
+        styles.add(Style.pop);
+        styles.add(Style.rock);
+        Band band1 = newBand("Konflikt", styles, Region.slovensko, 78.20, 6.5);
+        styles.remove(Style.rock);
+        styles.add(Style.reggae);
+        Band band2 = newBand("Medial Banana", styles, Region.zahranici, 222.10, 9.3);
+        Band band3 = newBand("Medial Banana", styles, Region.slovensko, 743.00, 8.2);
 
+        instance.createBand(band1);
+        instance.createBand(band2);
+        instance.createBand(band3);
+
+        List<Band> expected = Arrays.asList(band1);
+        List<Band> actual = new ArrayList<>(instance.findBandByName("Konflikt"));
+        assertEquals(1, actual.size());
+        assertDeepEquals(expected, actual);
+
+        expected = Arrays.asList(band2, band3);
+        actual = new ArrayList<>(instance.findBandByName("Medial Banana"));
+        assertEquals(2, actual.size());
+
+        assertNotEquals(actual.get(0), actual.get(1));
+        assertDeepNotEquals(actual.get(0), actual.get(1));
+
+        Collections.sort(actual, idComparator);
+        Collections.sort(expected, idComparator);
+
+        assertDeepEquals(expected, actual);
     }
 
     /**
