@@ -22,7 +22,7 @@ public interface BandManager {
     
     public List<Band> findBandByRegion(List<Region> regions);
     
-    public List<Band> findBandbyPriceRange(Double from, Double to);
+    public List<Band> findBandByPriceRange(Double from, Double to);
     
     public List<Band> findBandByRate(Double from);
 }

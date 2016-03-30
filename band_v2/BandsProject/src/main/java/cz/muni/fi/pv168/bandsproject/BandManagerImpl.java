@@ -153,11 +153,29 @@ public class BandManagerImpl implements BandManager{
 
     @Override //// TODO
     public List<Band> findBandByRegion(List<Region> regions) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        String s = "";
+        for(Region r: regions){
+            s += r.ordinal()+", ";
+        }
+        s = s.substring(0, s.length()-2);
+        
+        try (Connection connection = dataSource.getConnection();
+                PreparedStatement st = connection.prepareStatement(
+                        "SELECT * FROM BAND WHERE region IN ("+s+")")) {
+            ResultSet rs = st.executeQuery();
+            List<Band> bands = new ArrayList<>();
+            while(rs.next()) {
+                bands.add(resultSetToBand(rs));
+            }
+            return bands;
+        } catch (SQLException ex) {
+            throw new ServiceFailureException(
+                    "Error when retrieving band with regions " + regions.toString(), ex);
+        }
     }
 
     @Override
-    public List<Band> findBandbyPriceRange(Double from, Double to) throws ServiceFailureException {
+    public List<Band> findBandByPriceRange(Double from, Double to) throws ServiceFailureException {
         try (Connection connection = dataSource.getConnection();
                 PreparedStatement st = connection.prepareStatement(
                         "SELECT id,name,styles,region,pricePerHour,rate FROM BAND "
