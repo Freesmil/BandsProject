@@ -8,18 +8,7 @@ public class Customer {
     private String name;
     private String phoneNumber;
     private String address;
-/*
-    public Customer(String name, String phoneNumber, String address) {
-        //overit vstupy
-        this.name = name;
-        this.phoneNumber = phoneNumber;
-        this.address = address;
-    }
 
-    public Customer(){
-
-    }
-*/
     public Long getId() {
         return id;
     }

@@ -7,24 +7,31 @@ import java.util.List;
 import javax.sql.DataSource;
 import java.sql.*;
 import java.util.ArrayList;
+import org.springframework.jdbc.core.JdbcTemplate;
 
 /**
  * Created by Lenka on 9.3.2016.
  */
 public class BandManagerImpl implements BandManager{
     private final DataSource dataSource;
+    private JdbcTemplate jdbcTemplateObject;
     
     public BandManagerImpl(DataSource dataSource) {
         this.dataSource = dataSource;
     }
 
     @Override
-    public void createBand(Band band) throws ServiceFailureException {
+    public void createBand(Band band) throws ServiceFailureException { 
         validate(band);
         if (band.getId() != null) {
             throw new IllegalArgumentException("band id is already set");
         }
-
+        
+        String SQL = "INSERT INTO BAND (name,styles,region,pricePerHour,rate) VALUES (?,?,?,?,?)";
+        jdbcTemplateObject.update(SQL, band.getName(), band.getStyles().toString(), 
+                band.getRegion().ordinal(), band.getPricePerHour(), band.getRate());
+        
+        /*
         try (Connection connection = dataSource.getConnection();
                 PreparedStatement st = connection.prepareStatement(
                         "INSERT INTO BAND (name,styles,region,pricePerHour,rate) VALUES (?,?,?,?,?)",
@@ -46,6 +53,7 @@ public class BandManagerImpl implements BandManager{
         } catch (SQLException ex) {
             throw new ServiceFailureException("Error when inserting band " + band, ex);
         }
+        */
     }
 
     @Override
@@ -54,6 +62,12 @@ public class BandManagerImpl implements BandManager{
         if(band.getId() == null) {
             throw new IllegalArgumentException("band id is null");
         }
+        
+        String SQL = "UPDATE BAND SET name = ?,styles = ?,region = ?,pricePerHour = ?,rate = ? WHERE id = ?";
+        jdbcTemplateObject.update(SQL, band.getName(), band.getStyles().toString(), 
+                band.getRegion().ordinal(), band.getPricePerHour(), band.getRate(), band.getId());
+        
+        /*
         try (Connection connection = dataSource.getConnection();
                 PreparedStatement st = connection.prepareStatement(
                     "UPDATE BAND SET name = ?,styles = ?,region = ?,pricePerHour = ?,rate = ? WHERE id = ?")){
@@ -74,6 +88,7 @@ public class BandManagerImpl implements BandManager{
         } catch (SQLException ex) {
             throw new ServiceFailureException("Error when updating band " + band, ex);
         }
+        */
     }
 
     @Override
@@ -84,6 +99,11 @@ public class BandManagerImpl implements BandManager{
         if (band.getId() == null) {
             throw new IllegalArgumentException("band id is null");
         }
+        
+        String SQL = "DELETE FROM band WHERE id = ?";
+        jdbcTemplateObject.update(SQL, band.getId()); //UPDATE??
+        
+        /*
         try (Connection connection = dataSource.getConnection();
                 PreparedStatement st = connection.prepareStatement(
                     "DELETE FROM band WHERE id = ?")) {
@@ -101,10 +121,15 @@ public class BandManagerImpl implements BandManager{
             throw new ServiceFailureException(
                     "Error when updating band " + band, ex);
         }
+        */
     }
 
     @Override
     public Band findBandById(Long id) throws ServiceFailureException {
+        String SQL = "SELECT * FROM BAND WHERE id = ?";
+        Band band = jdbcTemplateObject.queryForObject(SQL, new Object[]{id}, /*resultSetToBand()*/);
+        return band;
+        /*
         try (Connection connection = dataSource.getConnection();
                 PreparedStatement st = connection.prepareStatement(
                         "SELECT * FROM BAND WHERE id = ?")) {
@@ -126,6 +151,7 @@ public class BandManagerImpl implements BandManager{
             throw new ServiceFailureException(
                     "Error when retrieving band with id " + id, ex);
         }
+        */
     }
 
     @Override

@@ -12,21 +12,7 @@ public class Band {
     private Region region;
     private Double pricePerHour;
     private Double rate;
-/*
-    public Band(String bandName, List<Style> styles, Region region, Double pricePerHour, Double rate) {
-        //overit, ci su spravne zadane
-        //vytvorit id
-        this.bandName = bandName;
-        this.styles = styles;
-        this.region = region;
-        this.pricePerHour = pricePerHour;
-        this.rate = rate;
-    }
 
-    Band() {
-        //vytv ID?
-    }
-*/
     public Long getId() {
         return id;
     }

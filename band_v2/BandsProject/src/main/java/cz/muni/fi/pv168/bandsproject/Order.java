@@ -12,17 +12,7 @@ public class Order {
     private Date date;
     private Region place;
     private int duration;
-/*
-    public Order(Customer customer, Band band, Date date, Region place, int duration) {
-        //overit vstupy
-        //vytv. id
-        this.customer = customer;
-        this.band = band;
-        this.date = date;
-        this.place = place;
-        this.duration = duration;
-    }
-*/
+
     public Long getId() {
         return id;
     }
