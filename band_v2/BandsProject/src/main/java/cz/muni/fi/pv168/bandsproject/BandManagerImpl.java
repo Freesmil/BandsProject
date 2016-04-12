@@ -8,6 +8,7 @@ import javax.sql.DataSource;
 import java.sql.*;
 import java.util.ArrayList;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.core.RowMapper;
 
 /**
  * Created by Lenka on 9.3.2016.
@@ -26,34 +27,9 @@ public class BandManagerImpl implements BandManager{
         if (band.getId() != null) {
             throw new IllegalArgumentException("band id is already set");
         }
-        
         String SQL = "INSERT INTO BAND (name,styles,region,pricePerHour,rate) VALUES (?,?,?,?,?)";
         jdbcTemplateObject.update(SQL, band.getName(), band.getStyles().toString(), 
                 band.getRegion().ordinal(), band.getPricePerHour(), band.getRate());
-        
-        /*
-        try (Connection connection = dataSource.getConnection();
-                PreparedStatement st = connection.prepareStatement(
-                        "INSERT INTO BAND (name,styles,region,pricePerHour,rate) VALUES (?,?,?,?,?)",
-                        Statement.RETURN_GENERATED_KEYS)) {
-
-            st.setString(1, band.getName());
-            st.setString(2, convertEnumToString(band.getStyles()));
-            st.setInt(3, band.getRegion().ordinal());
-            st.setDouble(4, band.getPricePerHour());
-            st.setDouble(5, band.getRate());
-            int addedRows = st.executeUpdate();
-            if (addedRows != 1) {
-                throw new ServiceFailureException("Internal Error: More rows ("
-                        + addedRows + ") inserted when trying to insert band " + band);
-            }
-
-            ResultSet keyRS = st.getGeneratedKeys();
-            band.setId(getKey(keyRS, band));
-        } catch (SQLException ex) {
-            throw new ServiceFailureException("Error when inserting band " + band, ex);
-        }
-        */
     }
 
     @Override
@@ -62,33 +38,9 @@ public class BandManagerImpl implements BandManager{
         if(band.getId() == null) {
             throw new IllegalArgumentException("band id is null");
         }
-        
         String SQL = "UPDATE BAND SET name = ?,styles = ?,region = ?,pricePerHour = ?,rate = ? WHERE id = ?";
         jdbcTemplateObject.update(SQL, band.getName(), band.getStyles().toString(), 
                 band.getRegion().ordinal(), band.getPricePerHour(), band.getRate(), band.getId());
-        
-        /*
-        try (Connection connection = dataSource.getConnection();
-                PreparedStatement st = connection.prepareStatement(
-                    "UPDATE BAND SET name = ?,styles = ?,region = ?,pricePerHour = ?,rate = ? WHERE id = ?")){
-            st.setString(1, band.getName());
-            st.setString(2, convertEnumToString(band.getStyles()));
-            st.setInt(3, band.getRegion().ordinal());
-            st.setDouble(4, band.getPricePerHour());
-            st.setDouble(5, band.getRate());
-            st.setLong(6, band.getId());
-            
-            int count = st.executeUpdate();
-            if(count == 0) {
-                throw new EntityNotFoundException("Band " + band + " was not found in database!");
-            } else if(count != 1) {
-                throw new ServiceFailureException("Invalid updated rows count detected "
-                        + "(one row should be updated): " + count);
-            }
-        } catch (SQLException ex) {
-            throw new ServiceFailureException("Error when updating band " + band, ex);
-        }
-        */
     }
 
     @Override
@@ -99,59 +51,15 @@ public class BandManagerImpl implements BandManager{
         if (band.getId() == null) {
             throw new IllegalArgumentException("band id is null");
         }
-        
         String SQL = "DELETE FROM band WHERE id = ?";
         jdbcTemplateObject.update(SQL, band.getId()); //UPDATE??
-        
-        /*
-        try (Connection connection = dataSource.getConnection();
-                PreparedStatement st = connection.prepareStatement(
-                    "DELETE FROM band WHERE id = ?")) {
-
-            st.setLong(1, band.getId());
-
-            int count = st.executeUpdate();
-            if (count == 0) {
-                throw new EntityNotFoundException("Band " + band + " was not found in database!");
-            } else if (count != 1) {
-                throw new ServiceFailureException("Invalid deleted rows count detected "
-                        + "(one row should be updated): " + count);
-            }
-        } catch (SQLException ex) {
-            throw new ServiceFailureException(
-                    "Error when updating band " + band, ex);
-        }
-        */
     }
 
     @Override
     public Band findBandById(Long id) throws ServiceFailureException {
         String SQL = "SELECT * FROM BAND WHERE id = ?";
-        Band band = jdbcTemplateObject.queryForObject(SQL, new Object[]{id}, /*resultSetToBand()*/);
+        Band band = jdbcTemplateObject.queryForObject(SQL, new Object[]{id}, new BandMapper());
         return band;
-        /*
-        try (Connection connection = dataSource.getConnection();
-                PreparedStatement st = connection.prepareStatement(
-                        "SELECT * FROM BAND WHERE id = ?")) {
-            st.setLong(1, id);
-            ResultSet rs = st.executeQuery();
-
-            if (rs.next()) {
-                Band band = resultSetToBand(rs);
-                if (rs.next()) {
-                    throw new ServiceFailureException(
-                        "Internal error: More entities with the same id found "
-                            + "(source id: " + id + ", found " + band + " and " + resultSetToBand(rs));
-                }
-                return band;
-            } else {
-                return null;
-            }
-        } catch (SQLException ex) {
-            throw new ServiceFailureException(
-                    "Error when retrieving band with id " + id, ex);
-        }
-        */
     }
 
     @Override
@@ -283,51 +191,9 @@ public class BandManagerImpl implements BandManager{
 
     /**
      *
-     * @param keyRS
-     * @param band
-     * @return
-     * @throws ServiceFailureException
-     * @throws SQLException
-     */
-    private Long getKey(ResultSet keyRS, Band band) throws ServiceFailureException, SQLException {
-        if (keyRS.next()) {
-            if (keyRS.getMetaData().getColumnCount() != 1) {
-                throw new ServiceFailureException("Internal Error: Generated key"
-                        + "retriving failed when trying to insert band " + band
-                        + " - wrong key fields count: " + keyRS.getMetaData().getColumnCount());
-            }
-            Long result = keyRS.getLong(1);
-            if (keyRS.next()) {
-                throw new ServiceFailureException("Internal Error: Generated key"
-                        + "retriving failed when trying to insert band " + band
-                        + " - more keys found");
-            }
-            return result;
-        } else {
-            throw new ServiceFailureException("Internal Error: Generated key"
-                    + "retriving failed when trying to insert band " + band
-                    + " - no key found");
-        }
-    }
-
-    /**
-     *
-     * @param styles
-     * @return
-     */
-    private String convertEnumToString(List<Style> styles) {
-        String str = "";
-        for(Style style : styles) {
-            str += style.toString() + " ";
-        }
-        return str;
-    }
-
-    /**
-     *
      * @param str
      * @return
-     */
+     */// ZMAZAT
     private List<Style> convertStringToEnum(String str) {
         String styles[] = str.split(" ");
         if(styles.length == 0) {
@@ -339,4 +205,18 @@ public class BandManagerImpl implements BandManager{
         }
         return styleList;
     }
+    
+    public class BandMapper implements RowMapper<Band> {
+        public Band mapRow(ResultSet rs, int rowNum) throws SQLException {
+            Band band = new Band();
+            band.setId(rs.getLong("id"));
+            band.setBandName(rs.getString("name"));
+            band.setStyles(convertStringToEnum(rs.getString("styles")));
+            band.setRegion(Region.values()[rs.getInt("region")]);
+            band.setPricePerHour(rs.getDouble("pricePerHour"));
+            band.setRate(rs.getDouble("rate"));
+            return band;
+        }
+    }
 }
+
