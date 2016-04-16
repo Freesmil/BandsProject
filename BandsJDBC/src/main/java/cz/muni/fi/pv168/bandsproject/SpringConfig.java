@@ -19,12 +19,12 @@ import static org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseType.
 
 //import org.apache.derby.jdbc.ClientDriver
 @Configuration  //je to konfigurace pro Spring
-@EnableTransactionManagement //bude ?ídit transakce u metod ozna?ených @Transactional
+@EnableTransactionManagement //bude ?ï¿½dit transakce u metod ozna?enï¿½ch @Transactional
 public class SpringConfig {
 
     @Bean
     public DataSource dataSource(){
-        /*//sítová databáze
+        /*//sï¿½tovï¿½ databï¿½ze
         BasicDataSource bds = new BasicDataSource();
         bds.setDriverClassName("org.apache.derby.jdbc.ClientDriver");
         bds.setUrl("jdbc:derby://localhost:1527/dragonDB");
@@ -34,9 +34,8 @@ public class SpringConfig {
 
         return new EmbeddedDatabaseBuilder()
                 .setType(DERBY)
-                .setName("dragonDB")
-                .addScript("classpath:dragon_schema.sql")
-                .addScript("classpath:fill_table.sql")
+                .setName("band")
+                .addScript("classpath:band-schema.sql")
                 .build();
 
     }
@@ -46,7 +45,7 @@ public class SpringConfig {
         return new DataSourceTransactionManager(dataSource());
     }
 
-    @Bean //náš manager, bude obalen ?ízením transakcí
+    @Bean //nï¿½ manager, bude obalen ?ï¿½zenï¿½m transakcï¿½
     public CustomerManager customerManager() {
         return new CustomerManagerImpl(dataSource());
     }

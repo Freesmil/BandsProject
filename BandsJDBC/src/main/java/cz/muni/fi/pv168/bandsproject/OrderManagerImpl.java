@@ -23,7 +23,7 @@ public class OrderManagerImpl implements OrderManager{
         if (order.getId() != null) {
             throw new IllegalArgumentException("band id is already set");
         }
-        String SQL = "INSERT INTO ORDER (customer,band,date,place,duration) VALUES (?,?,?,?,?)";
+        String SQL = "INSERT INTO LEASE (customer,band,date,place,duration) VALUES (?,?,?,?,?)";
         jdbcTemplateObject.update(SQL, order.getCustomer().toString(), order.getBand().toString(), order.getDate().toString(),
         order.getPlace().ordinal(), order.getDuration());
     }
@@ -34,7 +34,7 @@ public class OrderManagerImpl implements OrderManager{
         if(order.getId() == null) {
             throw new IllegalArgumentException("band id is null");
         }
-        String SQL = "UPDATE ORDER SET customer = ?,band = ?,date = ?,place = ?,duration = ? WHERE id = ?";
+        String SQL = "UPDATE LEASE SET customer = ?,band = ?,date = ?,place = ?,duration = ? WHERE id = ?";
         jdbcTemplateObject.update(SQL, order.getCustomer().toString(), order.getBand().toString(), order.getDate().toString(),
         order.getPlace().ordinal(), order.getDuration(), order.getId());
     }
@@ -47,20 +47,20 @@ public class OrderManagerImpl implements OrderManager{
         if (order.getId() == null) {
             throw new IllegalArgumentException("order id is null");
         }
-        String SQL = "DELETE FROM ORDER WHERE id = ?";
+        String SQL = "DELETE FROM LEASE WHERE id = ?";
         jdbcTemplateObject.update(SQL, order.getId()); //UPDATE??
     }
 
     @Override
     public Order findOrderById(Long id) {
-        String SQL = "SELECT * FROM ORDER WHERE id = ?";
+        String SQL = "SELECT * FROM LEASE WHERE id = ?";
         Order order = jdbcTemplateObject.queryForObject(SQL, new Object[]{id}, new OrderMapper());
         return order;
     }
 
     @Override
     public List<Order> findAllOrders() {
-        String SQL = "select * from ORDER";
+        String SQL = "select * from LEASE";
         List <Order> orders = jdbcTemplateObject.query(SQL, new OrderMapper());
         return orders;
     }

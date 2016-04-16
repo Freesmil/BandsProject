@@ -14,6 +14,8 @@ public interface BandManager {
     
     public void deleteBand(Band band);
     
+    public List<Band> getAllBands();
+    
     public Band findBandById(Long id);
     
     public List<Band> findBandByName(String name);

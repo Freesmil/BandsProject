@@ -56,6 +56,13 @@ public class BandManagerImpl implements BandManager{
     }
 
     @Override
+    public List<Band> getAllBands() {
+        String SQL = "select * from BAND";
+        List<Band> bands = jdbcTemplateObject.query(SQL, new BandMapper());
+        return bands;
+    }
+    
+    @Override
     public Band findBandById(Long id) throws ServiceFailureException {
         String SQL = "SELECT * FROM BAND WHERE id = ?";
         Band band = jdbcTemplateObject.queryForObject(SQL, new Object[]{id}, new BandMapper());

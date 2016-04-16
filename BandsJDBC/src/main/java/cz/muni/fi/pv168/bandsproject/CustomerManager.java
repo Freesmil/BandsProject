@@ -14,6 +14,6 @@ public interface CustomerManager {
     public void deleteCustomer(Customer customer);
 
     public Customer getCustomer(Long id);
-
+    
     public List<Customer> getAllCustomers();
 }
