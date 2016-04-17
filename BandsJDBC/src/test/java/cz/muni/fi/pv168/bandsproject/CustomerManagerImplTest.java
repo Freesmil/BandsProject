@@ -1,15 +1,13 @@
 package cz.muni.fi.pv168.bandsproject;
 
-import org.apache.derby.jdbc.EmbeddedDataSource;
-import org.junit.After;
-import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
-
-import javax.sql.DataSource;
-import java.sql.Connection;
-import java.sql.SQLException;
+import org.junit.runner.RunWith;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+import org.springframework.transaction.annotation.Transactional;
 
 import static org.hamcrest.core.Is.is;
 import static org.hamcrest.core.IsEqual.equalTo;
@@ -21,50 +19,24 @@ import static org.junit.Assert.*;
  *
  * @author Tomas
  */
+@RunWith(SpringJUnit4ClassRunner.class) //Spring se zúčastní unit testů
+@ContextConfiguration(classes = {MySpringTestConfig.class}) //konfigurace je ve třídě MySpringTestConfig
+@Transactional //každý test poběží ve vlastní transakci, která bude na konci rollbackována
 public class CustomerManagerImplTest {
-
-    private CustomerManagerImpl manager;
-    private DataSource dataSource;
-
+    @Autowired
+    private CustomerManager customerManager;
     @Rule
     public ExpectedException expectedException = ExpectedException.none();
-
-    @Before
-    public void setUp() throws SQLException {
-        dataSource = prepareDataSource();
-        try (Connection connection = dataSource.getConnection()) {
-            connection.prepareStatement("CREATE TABLE CUSTOMER ("
-                    + "id bigint primary key generated always as identity,"
-                    + "name VARCHAR(50),"
-                    + "phoneNumber VARCHAR(20),"
-                    + "adress VARCHAR(50))").executeUpdate();
-        }
-        manager = new CustomerManagerImpl(dataSource);
-    }
-
-    private static DataSource prepareDataSource() throws SQLException {
-        EmbeddedDataSource ds = new EmbeddedDataSource();
-        ds.setDatabaseName("memory:customermgr-test");
-        ds.setCreateDatabase("create");
-        return ds;
-    }
-
-    @After
-    public void tearDown() throws SQLException {
-        try (Connection connection = dataSource.getConnection()) {
-            connection.prepareStatement("DROP TABLE CUSTOMER").executeUpdate();
-        }
-    }
 
     @Test
     public void createCustomer() {
         Customer customer = newCustomer("Pepa", "666 123 456", "Kartouzska 69");
-        manager.createCustomer(customer);
+        customerManager.createCustomer(customer);
 
         Long customerId = customer.getId();
         assertThat("saved customer has null ID", customer.getId(), is(not(equalTo(null))));
 
-        Customer result = manager.getCustomer(customerId);
+        Customer result = customerManager.getCustomer(customerId);
         assertThat("loaded user is the same instance", result, is(not(sameInstance(customer))));
         
         assertDeepEquals(customer, result);
@@ -72,7 +44,7 @@ public class CustomerManagerImplTest {
 
     @Test(expected = IllegalArgumentException.class)
     public void testCreateWithNull() throws Exception {
-        manager.createCustomer(null);
+        customerManager.createCustomer(null);
     }
 
     @Test
@@ -81,7 +53,7 @@ public class CustomerManagerImplTest {
 
         customer.setId(1L);
         try {
-            manager.createCustomer(customer);
+            customerManager.createCustomer(customer);
             fail("should refuse assigned id");
         } catch (IllegalArgumentException ex) {
             //OK
@@ -89,7 +61,7 @@ public class CustomerManagerImplTest {
 
         customer = newCustomer(null, "666 123 456", "Kartouzska 69");
         try {
-            manager.createCustomer(customer);
+            customerManager.createCustomer(customer);
             fail("no name of customer detected");
         } catch (IllegalArgumentException ex) {
             //OK
@@ -97,7 +69,7 @@ public class CustomerManagerImplTest {
 
         customer = newCustomer("Pepa", null, "Kartouzska 69");
         try {
-            manager.createCustomer(customer);
+            customerManager.createCustomer(customer);
             fail("no phone number of customer detected");
         } catch (IllegalArgumentException ex) {
             //OK
@@ -105,7 +77,7 @@ public class CustomerManagerImplTest {
 
         customer = newCustomer("Pepa", "666 123 456", null);
         try {
-            manager.createCustomer(customer);
+            customerManager.createCustomer(customer);
             fail("no address of customer detected");
         } catch (IllegalArgumentException ex) {
             //OK
@@ -118,16 +90,16 @@ public class CustomerManagerImplTest {
     public void updateCustomer() {
         Customer customer = newCustomer("Pepa", "666 123 456", "Kartouzska 69");
         Customer customer2 = newCustomer("Alojz", "158 155 150", "Route 66");
-        manager.createCustomer(customer);
-        manager.createCustomer(customer2);
+        customerManager.createCustomer(customer);
+        customerManager.createCustomer(customer2);
         Long customerId = customer.getId();
 
         
         customer.setName("Jozef");
         
-        manager.updateCustomer(customer);
+        customerManager.updateCustomer(customer);
         //load from database
-        customer = manager.getCustomer(customerId);
+        customer = customerManager.getCustomer(customerId);
         //new style assertions
         assertThat("name was not changed", customer.getName(), is(equalTo("Jozef")));
         assertThat("phone number was changed when changing name", customer.getPhoneNumber(), is(equalTo("666 123 456")));
@@ -135,70 +107,70 @@ public class CustomerManagerImplTest {
 
         //change row value to 0
         customer.setPhoneNumber("000 111 222");
-        manager.updateCustomer(customer);
+        customerManager.updateCustomer(customer);
         //load from database
-        customer = manager.getCustomer(customerId);
+        customer = customerManager.getCustomer(customerId);
         //old style assertions
         assertEquals("Jozef", customer.getName());
         assertEquals("000 111 222", customer.getPhoneNumber());
         assertEquals("Kartouzska 69", customer.getAddress());
 
         customer.setAddress("Kartoozska 69");
-        manager.updateCustomer(customer);
-        customer = manager.getCustomer(customerId);
+        customerManager.updateCustomer(customer);
+        customer = customerManager.getCustomer(customerId);
         assertEquals("Jozef", customer.getName());
         assertEquals("000 111 222", customer.getPhoneNumber());
         assertEquals("Kartoozska 69", customer.getAddress());
 
         // Check if updates didn't affected other records
-        assertDeepEquals(customer2, manager.getCustomer(customer2.getId()));
+        assertDeepEquals(customer2, customerManager.getCustomer(customer2.getId()));
     }
 
     @Test
     public void updateCustomerWithWrongAttributes() {
 
         Customer customer = newCustomer("Pepa", "666 123 456", "Kartouzska 69");
-        manager.createCustomer(customer);
+        customerManager.createCustomer(customer);
         Long customerId = customer.getId();
 
         try {
-            manager.updateCustomer(null);
+            customerManager.updateCustomer(null);
             fail();
         } catch (IllegalArgumentException ex) {
             //OK
         }
 
         try {
-            customer = manager.getCustomer(customerId);
+            customer = customerManager.getCustomer(customerId);
             customer.setId(null);
-            manager.updateCustomer(customer);
+            customerManager.updateCustomer(customer);
             fail();
         } catch (IllegalArgumentException ex) {
             //OK
         }
 
         try {
-            customer = manager.getCustomer(customerId);
+            customer = customerManager.getCustomer(customerId);
             customer.setName(null);
-            manager.updateCustomer(customer);
+            customerManager.updateCustomer(customer);
             fail();
         } catch (IllegalArgumentException ex) {
             //OK
         }
 
         try {
-            customer = manager.getCustomer(customerId);
+            customer = customerManager.getCustomer(customerId);
             customer.setPhoneNumber(null);
-            manager.updateCustomer(customer);
+            customerManager.updateCustomer(customer);
             fail();
         } catch (IllegalArgumentException ex) {
             //OK
         }
 
         try {
-            customer = manager.getCustomer(customerId);
+            customer = customerManager.getCustomer(customerId);
             customer.setAddress(null);
-            manager.updateCustomer(customer);
+            customerManager.updateCustomer(customer);
             fail();
         } catch (IllegalArgumentException ex) {
             //OK
@@ -211,33 +183,33 @@ public class CustomerManagerImplTest {
 
         Customer customer = newCustomer("Pepa", "666 123 456", "Kartouzska 69");
         Customer customer2 = newCustomer("Alojz", "158 155 150", "Route 66");
-        manager.createCustomer(customer);
-        manager.createCustomer(customer2);
+        customerManager.createCustomer(customer);
+        customerManager.createCustomer(customer2);
 
-        assertNotNull(manager.getCustomer(customer.getId()));
-        assertNotNull(manager.getCustomer(customer2.getId()));
+        assertNotNull(customerManager.getCustomer(customer.getId()));
+        assertNotNull(customerManager.getCustomer(customer2.getId()));
 
-        manager.deleteCustomer(customer);
+        customerManager.deleteCustomer(customer);
 
-        assertNull(manager.getCustomer(customer.getId()));
-        assertNotNull(manager.getCustomer(customer2.getId()));
+        assertNull(customerManager.getCustomer(customer.getId()));
+        assertNotNull(customerManager.getCustomer(customer2.getId()));
     }
 
     @Test
     public void deleteCustomerWithWrongAttributes() {
 
         Customer customer = newCustomer("Pepa", "666 123 456", "Kartouzska 69");
-        manager.createCustomer(customer);
+        customerManager.createCustomer(customer);
         
         //null id
         expectedException.expect(IllegalArgumentException.class);
         customer.setId(null);
-        manager.deleteCustomer(null);
+        customerManager.deleteCustomer(null);
 
         //null id
         expectedException.expect(IllegalArgumentException.class);
         customer.setId(1L);
-        manager.deleteCustomer(null);
+        customerManager.deleteCustomer(null);
     }
 
     public Customer newCustomer(String name, String phoneNumber, String address){

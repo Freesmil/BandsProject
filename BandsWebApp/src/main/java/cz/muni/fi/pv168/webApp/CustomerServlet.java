@@ -39,9 +39,10 @@ public class CustomerServlet extends HttpServlet {
                 String name = request.getParameter("name");
                 String phoneNumber = request.getParameter("phoneNumber");
                 String address = request.getParameter("address");
-                if ( ( (address==null || address.length()==0) && (phoneNumber==null || phoneNumber.length()==0) )
+                if (address==null || address.length()==0
+                        || phoneNumber==null || phoneNumber.length()==0
                         || name == null || name.length() == 0) {
-                    request.setAttribute("chyba", "Je nutné vyplnit všechny hodnoty alebo aspon jeden kontakt!");
+                    request.setAttribute("chyba", "Je nutne vyplnit vsechny hodnoty!");
                     showCustomerList(request, response);
                     break;
                 }
@@ -87,18 +88,19 @@ public class CustomerServlet extends HttpServlet {
                     name = request.getParameter("name");
                     phoneNumber = request.getParameter("phoneNumber");
                     address = request.getParameter("address");
-                    if ( ( (address==null || address.length()==0) && (phoneNumber==null || phoneNumber.length()==0) )
+                    if (address==null || address.length()==0
+                            || phoneNumber==null || phoneNumber.length()==0
                             || name == null || name.length() == 0) {
-                        request.setAttribute("chyba", "Je nutné vyplnit všechny hodnoty alebo aspon jeden kontakt!");
+                        request.setAttribute("chyba", "Je nutne vyplnit vsechny hodnoty!");
                         showCustomerList(request, response);
                         return;
                     }
                     try {
                         customer = getCustomerManager().getCustomer(id);
                         customer.setName(name);
+                        customer.setPhoneNumber(phoneNumber);
                         customer.setAddress(address);
                         getCustomerManager().updateCustomer(customer);
-                        customer.setPhoneNumber(phoneNumber);
                         log.debug("updated {}",customer);
                         response.sendRedirect(request.getContextPath()+URL_MAPPING);
                         return;
@@ -119,16 +121,16 @@ public class CustomerServlet extends HttpServlet {
     }
 
     /**
-     * Gets BookManager from ServletContext, where it was stored by {@link StartListener}.
+     * Gets CustomerManager from ServletContext, where it was stored by {@link StartListener}.
      *
-     * @return BookManager instance
+     * @return CustomerManager instance
      */
     private CustomerManager getCustomerManager() {
         return (CustomerManager) getServletContext().getAttribute("customerManager");
     }
 
     /**
-     * Stores the list of books to request attribute "books" and forwards to the JSP to display it.
+     * Stores the list of customers to request attribute "customers" and forwards to the JSP to display it.
      */
     private void showCustomerList(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         try {

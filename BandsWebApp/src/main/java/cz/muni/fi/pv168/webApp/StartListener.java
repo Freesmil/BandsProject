@@ -24,17 +24,17 @@ public class StartListener implements ServletContextListener {
 
     @Override
     public void contextInitialized(ServletContextEvent ev) {
-        log.info("webová aplikace inicializována");
+        log.info("webova aplikace inicializovana");
         ServletContext servletContext = ev.getServletContext();
         ApplicationContext springContext = new AnnotationConfigApplicationContext(SpringConfig.class);
-        servletContext.setAttribute("customerManager", CustomerManager.class);
-        servletContext.setAttribute("bandManager", BandManager.class);
-        servletContext.setAttribute("orderManager", OrderManager.class);
-        log.info("vytvoreny manažery a uloženy do atributu servletContextu");
+        servletContext.setAttribute("customerManager", springContext.getBean("customerManager", CustomerManager.class));
+        servletContext.setAttribute("bandManager", springContext.getBean("bandManager", BandManager.class));
+        servletContext.setAttribute("orderManager", springContext.getBean("orderManager", OrderManager.class));
+        log.info("vytvoreny manazery a ulozeny do atributu servletContextu");
     }
 
     @Override
     public void contextDestroyed(ServletContextEvent ev) {
-        log.info("aplikace koncí");
+        log.info("aplikace konci");
     }
 }

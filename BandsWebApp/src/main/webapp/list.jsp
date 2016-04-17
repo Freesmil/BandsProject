@@ -9,11 +9,11 @@
 <table border="1">
     <thead>
     <tr>
-        <th>název kapely</th>
-        <th>styly</th>
-        <th>region</th>
-        <th>cena za hodinu</th>
-        <th>hodnoceni</th>
+        <th>Nazev kapely</th>
+        <th>Styly</th>
+        <th>Region</th>
+        <th>Cena za hodinu</th>
+        <th>Hodnoceni</th>
     </tr>
     </thead>
     <c:forEach items="${bands}" var="band">
@@ -42,7 +42,7 @@
 <form action="${pageContext.request.contextPath}/bands/add" method="post">
     <table>
         <tr>
-            <th>Název kapely:</th>
+            <th>Nï¿½zev kapely:</th>
             <td><input type="text" name="name" value="<c:out value='${param.name}'/>"/></td>
         </tr>
         <tr>

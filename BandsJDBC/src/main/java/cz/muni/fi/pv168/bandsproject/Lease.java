@@ -5,7 +5,7 @@ import java.util.Date;
 /**
  * Created by Lenka on 9.3.2016.
  */
-public class Order {
+public class Lease {
     private Long id;
     private Customer customer;
     private Band band;

@@ -12,7 +12,7 @@
     
     <build>
         <!-- what to do when only "mvn" is run -->
-        <defaultGoal>tomcat7:run</defaultGoal>
+        <!--<defaultGoal>tomcat7:run</defaultGoal>-->
 
         <plugins>
             <plugin>
@@ -23,12 +23,12 @@
                     <failOnMissingWebXml>false</failOnMissingWebXml>
                 </configuration>
             </plugin>
-            <!--  embedded tomcat -->
-            <plugin>
-                <groupId>org.apache.tomcat.maven</groupId>
-                <artifactId>tomcat7-maven-plugin</artifactId>
-                <version>2.2</version>
-            </plugin>
+            <!--&lt;!&ndash;  embedded tomcat &ndash;&gt;-->
+            <!--<plugin>-->
+                <!--<groupId>org.apache.tomcat.maven</groupId>-->
+                <!--<artifactId>tomcat7-maven-plugin</artifactId>-->
+                <!--<version>2.2</version>-->
+            <!--</plugin>-->
 
             <!-- Java language version -->
             <plugin>
@@ -105,6 +105,12 @@
             <groupId>org.apache.commons</groupId>
             <artifactId>commons-dbcp2</artifactId>
             <version>2.0.1</version>
+        </dependency>
+
+        <dependency>
+            <groupId>javax.servlet</groupId>
+            <artifactId>jstl</artifactId>
+            <version>1.2</version>
         </dependency>
     </dependencies>
     

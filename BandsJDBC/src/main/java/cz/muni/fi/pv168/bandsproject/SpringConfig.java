@@ -27,15 +27,16 @@ public class SpringConfig {
         /*//s�tov� datab�ze
         BasicDataSource bds = new BasicDataSource();
         bds.setDriverClassName("org.apache.derby.jdbc.ClientDriver");
-        bds.setUrl("jdbc:derby://localhost:1527/dragonDB");
+        bds.setUrl("jdbc:derby://localhost:1527/bandDB");
         //bds.setUsername("admin");
         //bds.setPassword("admin");
         return bds;*/
 
         return new EmbeddedDatabaseBuilder()
                 .setType(DERBY)
-                .setName("band")
+                .setName("bandDB")
                 .addScript("classpath:band-schema.sql")
+                .addScript("classpath:fill-table.sql")
                 .build();
 
     }
@@ -51,12 +52,12 @@ public class SpringConfig {
     }
 
     @Bean
-    public BandManager dragonManager() {
+    public BandManager bandManager() {
         return new BandManagerImpl(new TransactionAwareDataSourceProxy(dataSource()));
     }
 
     @Bean
-    public OrderManager leaseManager() {
-        return new OrderManagerImpl(dataSource());
+    public LeaseManager orderManager() {
+        return new LeaseManagerImpl(dataSource());
     }
 }

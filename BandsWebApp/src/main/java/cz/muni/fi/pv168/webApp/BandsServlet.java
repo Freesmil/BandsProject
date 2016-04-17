@@ -31,32 +31,32 @@ public class BandsServlet extends HttpServlet {
 
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        //aby fungovala ?estina z formulá?e
+        //aby fungovala ?estina z formulï¿½?e
         request.setCharacterEncoding("utf-8");
-        //akce podle p?ípony v URL
+        //akce podle p?ï¿½pony v URL
         String action = request.getPathInfo();
         switch (action) {
             case "/add":
-                //na?tení POST parametr? z formulá?e
+                //na?tenï¿½ POST parametr? z formulï¿½?e
                 String name = request.getParameter("name");
-                String styles = request.getParameter("styles"); //prerobit na list??
+                //String styles = request.getParameter("styles"); //prerobit na list??
                 Region region = Region.valueOf(request.getParameter("region"));
                 Double pricePerHour = Double.parseDouble(request.getParameter("pricePerHour"));
                 Double rate = Double.parseDouble(request.getParameter("rate"));
 
-                //kontrola vypln?ní hodnot
+                //kontrola vypln?nï¿½ hodnot
                 if (name == null
                         || name.length() == 0
-                        || styles == null
-                        || styles.length() == 0
+                        //|| styles == null
+                        //|| styles.length() == 0
                         || region == null
                         || pricePerHour < 0
                         || rate < 0) {
-                    request.setAttribute("chyba", "Je nutné vyplnit všechny hodnoty spravne!");
+                    request.setAttribute("chyba", "Je nutnï¿½ vyplnit vï¿½echny hodnoty spravne!");
                     showBandsList(request, response);
                     return;
                 }
-                //zpracování dat - vytvo?ení záznamu v databázi
+                //zpracovï¿½nï¿½ dat - vytvo?enï¿½ zï¿½znamu v databï¿½zi
                 try {
                     Band band = new Band();
                     band.setBandName(name);
@@ -66,7 +66,7 @@ public class BandsServlet extends HttpServlet {
                     band.setRate(rate);
                     getBandManager().createBand(band);
                     log.debug("created {}",band);
-                    //redirect-after-POST je ochrana p?ed vícenásobným odesláním formulá?e
+                    //redirect-after-POST je ochrana p?ed vï¿½cenï¿½sobnï¿½m odeslï¿½nï¿½m formulï¿½?e
                     response.sendRedirect(request.getContextPath()+URL_MAPPING);
                     return;
                 } catch (ServiceFailureException e) {
@@ -87,28 +87,28 @@ public class BandsServlet extends HttpServlet {
                     return;
                 }
             case "/update":
-                //na?tení POST parametr? z formulá?e
+                //na?tenï¿½ POST parametr? z formulï¿½?e
                 String uname = request.getParameter("name");
-                String ustyles = request.getParameter("styles"); //prerobit na list??
+                //String ustyles = request.getParameter("styles"); //prerobit na list??
                 Region uregion = Region.valueOf(request.getParameter("region"));
                 Double upricePerHour = Double.parseDouble(request.getParameter("pricePerHour"));
                 Double urate = Double.parseDouble(request.getParameter("rate"));
                 long id = Long.parseLong(request.getParameter("id"));
 
-                //kontrola vypln?ní hodnot
+                //kontrola vypln?nï¿½ hodnot
                 if (uname == null
                         || uname.length() == 0
-                        || ustyles == null
-                        || ustyles.length() == 0
+                        //|| ustyles == null
+                        //|| ustyles.length() == 0
                         || uregion == null
                         || upricePerHour < 0
                         || urate < 0
                         || id <= 0) {
-                    request.setAttribute("chyba", "Je nutné vyplnit všechny hodnoty spravne!");
+                    request.setAttribute("chyba", "Je nutnï¿½ vyplnit vï¿½echny hodnoty spravne!");
                     showBandsList(request, response);
                     return;
                 }
-                //zpracování dat - vytvo?ení záznamu v databázi
+                //zpracovï¿½nï¿½ dat - vytvo?enï¿½ zï¿½znamu v databï¿½zi
                 try {
                     Band band = new Band();
                     band.setBandName(uname);
@@ -118,7 +118,7 @@ public class BandsServlet extends HttpServlet {
                     band.setRate(urate);
                     getBandManager().updateBand(band);
                     log.debug("created {}",band);
-                    //redirect-after-POST je ochrana p?ed vícenásobným odesláním formulá?e
+                    //redirect-after-POST je ochrana p?ed vï¿½cenï¿½sobnï¿½m odeslï¿½nï¿½m formulï¿½?e
                     response.sendRedirect(request.getContextPath()+URL_MAPPING);
                     return;
                 } catch (ServiceFailureException e) {

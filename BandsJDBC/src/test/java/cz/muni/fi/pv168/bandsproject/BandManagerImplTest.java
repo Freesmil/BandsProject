@@ -19,46 +19,25 @@ import javax.sql.DataSource;
 import static org.junit.Assert.*;
 import org.apache.derby.jdbc.EmbeddedDataSource;
 import org.junit.rules.ExpectedException;
+import org.junit.runner.RunWith;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+import org.springframework.transaction.annotation.Transactional;
 
 /**
  *
  * @author Lenka Svetlovska
  */
+@RunWith(SpringJUnit4ClassRunner.class) //Spring se zúčastní unit testů
+@ContextConfiguration(classes = {MySpringTestConfig.class}) //konfigurace je ve třídě MySpringTestConfig
+@Transactional //každý test poběží ve vlastní transakci, která bude na konci rollbackována
 public class BandManagerImplTest {
-    private BandManagerImpl instance;
-    private DataSource dataSource;
+    @Autowired
+    private BandManager bandManager;
 
     @Rule
     public ExpectedException expectedException = ExpectedException.none();
-   
-    @Before
-    public void setUp() throws SQLException {
-        dataSource = prepareDataSource();
-        try (Connection connection = dataSource.getConnection()) {
-            connection.prepareStatement("CREATE TABLE BAND ("
-                    + "id bigint primary key generated always as identity,"
-                    + "name VARCHAR(40),"
-                    + "styles VARCHAR(50),"
-                    + "region INT,"
-                    + "pricePerHour Double,"
-                    + "rate Double)").executeUpdate();
-        }
-        instance = new BandManagerImpl(dataSource);
-    }
-
-    private static DataSource prepareDataSource() throws SQLException {
-        EmbeddedDataSource ds = new EmbeddedDataSource();
-        ds.setDatabaseName("memory:bandmgr-test");
-        ds.setCreateDatabase("create");
-        return ds;
-    }
-
-    @After
-    public void tearDown() throws SQLException {
-        try (Connection connection = dataSource.getConnection()) {
-            connection.prepareStatement("DROP TABLE BAND").executeUpdate();
-        }
-    }
 
     /**
      * Test of createBand method, of class BandManagerImpl.
@@ -70,12 +49,12 @@ public class BandManagerImplTest {
         styles.add(Style.rock);
         Band band = newBand("Eufory", styles, Region.slovensko, 200.00, 7.4);
         
-        instance.createBand(band);
+        bandManager.createBand(band);
         
         Long bandId = band.getId();
         assertNotNull(bandId);
         
-        Band result = instance.findBandById(bandId);
+        Band result = bandManager.findBandById(bandId);
         assertNotSame(band, result);
         assertDeepEquals(band, result);
         
@@ -85,11 +64,11 @@ public class BandManagerImplTest {
         anotherStyles.add(Style.dnb);
         Band anotherBand = newBand("Some DiscoHipHopDnbBand", anotherStyles, Region.plzensky, 149.99, 2.3);
         
-        instance.createBand(anotherBand);
+        bandManager.createBand(anotherBand);
         
         Long anotherBandId = anotherBand.getId();
         
-        Band anotherResult = instance.findBandById(anotherBandId);
+        Band anotherResult = bandManager.findBandById(anotherBandId);
        
         assertNotSame(result, anotherResult);
         assertDeepNotEquals(result, anotherResult);
@@ -101,7 +80,7 @@ public class BandManagerImplTest {
      */
     @Test(expected = IllegalArgumentException.class)
     public void testCreateBandWithNull() throws Exception {
-        instance.createBand(null);
+        bandManager.createBand(null);
     }
     
     /**
@@ -115,33 +94,33 @@ public class BandManagerImplTest {
         band.setId(1L);
 
         expectedException.expect(IllegalArgumentException.class);
-        instance.createBand(band);
+        bandManager.createBand(band);
 
         //null band name
         band = newBand(null, styles, Region.slovensko, 330.30, 6.5);
         expectedException.expect(IllegalArgumentException.class);
-        instance.createBand(band);
+        bandManager.createBand(band);
 
         //null region
         band = newBand("Eufory", styles, null, 330.30, 6.5);
         expectedException.expect(IllegalArgumentException.class);
-        instance.createBand(band);
+        bandManager.createBand(band);
 
         //negative price
         band = newBand("Eufory", styles, Region.slovensko, -1.0, 6.5);
         expectedException.expect(IllegalArgumentException.class);
-        instance.createBand(band);
+        bandManager.createBand(band);
 
         //negative rate
         band = newBand("Eufory", styles, Region.slovensko, 330.30, -1.0);
         expectedException.expect(IllegalArgumentException.class);
-        instance.createBand(band);
+        bandManager.createBand(band);
 
         //null styles
         styles.removeAll(styles);
         band = newBand("Eufory", styles, Region.slovensko, 330.30, 1.0);
         expectedException.expect(IllegalArgumentException.class);
-        instance.createBand(band);
+        bandManager.createBand(band);
     }
 
     /**
@@ -152,18 +131,18 @@ public class BandManagerImplTest {
         List<Style> styles = new ArrayList<>();
         styles.add(Style.rock);
         Band band = newBand("Eufory", styles, Region.slovensko, 330.30, 6.5);
-        instance.createBand(band);
+        bandManager.createBand(band);
         
         Band band2 = newBand("Slize", styles, Region.zahranici, 30.30, 60.5);
-        instance.createBand(band2);
+        bandManager.createBand(band2);
         
         Long bandId = band.getId();
         
         // --- Name
         band.setBandName("Five Live");
-        instance.updateBand(band);
+        bandManager.updateBand(band);
         
-        band = instance.findBandById(bandId);
+        band = bandManager.findBandById(bandId);
         
         assertEquals("Five Live", band.getName());
         assertEquals(styles, band.getStyles());
@@ -175,9 +154,9 @@ public class BandManagerImplTest {
         // --- Styles
         styles.add(Style.metal);
         band.setStyles(styles);
-        instance.updateBand(band);
+        bandManager.updateBand(band);
         
-        band = instance.findBandById(bandId);
+        band = bandManager.findBandById(bandId);
         
         assertEquals("Five Live", band.getName());
         assertEquals(styles, band.getStyles());
@@ -188,9 +167,9 @@ public class BandManagerImplTest {
         
         // --- Region
         band.setRegion(Region.karlovarsky);
-        instance.updateBand(band);
+        bandManager.updateBand(band);
         
-        band = instance.findBandById(bandId);
+        band = bandManager.findBandById(bandId);
         
         assertEquals("Five Live", band.getName());
         assertEquals(styles, band.getStyles());
@@ -199,7 +178,7 @@ public class BandManagerImplTest {
         //assertEquals(60.5, band.getRate());
         
         // --- 
-        assertDeepEquals(band2, instance.findBandById(band2.getId()));
+        assertDeepEquals(band2, bandManager.findBandById(band2.getId()));
     }
 
     /**
@@ -219,13 +198,13 @@ public class BandManagerImplTest {
         styles2.add(Style.reggae);
         Band band2 = newBand("Some band", styles2, Region.vysocina, 30.58, 4.3);
         
-        instance.createBand(band);
-        instance.createBand(band2);
+        bandManager.createBand(band);
+        bandManager.createBand(band2);
         
-        instance.deleteBand(band);
+        bandManager.deleteBand(band);
         
-        assertNull(instance.findBandById(band.getId()));
-        assertNotNull(instance.findBandById(band2.getId()));
+        assertNull(bandManager.findBandById(band.getId()));
+        assertNotNull(bandManager.findBandById(band2.getId()));
     }
     
     /**
@@ -234,7 +213,7 @@ public class BandManagerImplTest {
      */
     @Test(expected = IllegalArgumentException.class)
     public void testDeleteBandWithNull() throws Exception {
-        instance.deleteBand(null);
+        bandManager.deleteBand(null);
     }   
     
     /**
@@ -250,12 +229,12 @@ public class BandManagerImplTest {
         //null id
         expectedException.expect(IllegalArgumentException.class);
         band.setId(null);
-        instance.deleteBand(null);
+        bandManager.deleteBand(null);
 
         //null id
         expectedException.expect(IllegalArgumentException.class);
         band.setId(1L);
-        instance.deleteBand(null);
+        bandManager.deleteBand(null);
     }
 
     /**
@@ -268,10 +247,10 @@ public class BandManagerImplTest {
         styles.add(Style.rock);
         Band band = newBand("Eufory", styles, Region.slovensko, 330.30, 6.5);
         
-        instance.createBand(band);
+        bandManager.createBand(band);
         Long bandId = band.getId();
         
-        Band result = instance.findBandById(bandId);
+        Band result = bandManager.findBandById(bandId);
         assertDeepEquals(band, result);
     }
         
@@ -280,15 +259,15 @@ public class BandManagerImplTest {
      */
     @Test
     public void testFindBandByIdWithWrongArguments() {
-        assertNull(instance.findBandById(1L));
+        assertNull(bandManager.findBandById(1L));
 
         //null id
         expectedException.expect(NullPointerException.class);
-        instance.findBandById(null);
+        bandManager.findBandById(null);
 
         //null id
         expectedException.expect(IllegalArgumentException.class);
-        instance.findBandById(-1L);
+        bandManager.findBandById(-1L);
     }
     
     /**
@@ -296,7 +275,7 @@ public class BandManagerImplTest {
      */
     @Test
     public void testFindBandByName() {
-        assertTrue(instance.findBandByName("Desmod").isEmpty());
+        assertTrue(bandManager.findBandByName("Desmod").isEmpty());
         
         List<Style> styles = new ArrayList<>();
         styles.add(Style.pop);
@@ -307,17 +286,17 @@ public class BandManagerImplTest {
         Band band2 = newBand("Medial Banana", styles, Region.zahranici, 222.10, 9.3);
         Band band3 = newBand("Medial Banana", styles, Region.slovensko, 743.00, 8.2);
 
-        instance.createBand(band1);
-        instance.createBand(band2);
-        instance.createBand(band3);
+        bandManager.createBand(band1);
+        bandManager.createBand(band2);
+        bandManager.createBand(band3);
 
         List<Band> expected = Arrays.asList(band1);
-        List<Band> actual = new ArrayList<>(instance.findBandByName("Konflikt"));
+        List<Band> actual = new ArrayList<>(bandManager.findBandByName("Konflikt"));
         assertEquals(1, actual.size());
         assertDeepEquals(expected, actual);
 
         expected = Arrays.asList(band2, band3);
-        actual = new ArrayList<>(instance.findBandByName("Medial Banana"));
+        actual = new ArrayList<>(bandManager.findBandByName("Medial Banana"));
         assertEquals(2, actual.size());
 
         assertNotEquals(actual.get(0), actual.get(1));
@@ -346,7 +325,7 @@ public class BandManagerImplTest {
         regions.add(Region.plzensky);
         regions.add(Region.liberecky);
         regions.add(Region.pardubicky);
-        assertTrue(instance.findBandByRegion(regions).isEmpty());
+        assertTrue(bandManager.findBandByRegion(regions).isEmpty());
         
         List<Style> styles = new ArrayList<>();
         styles.add(Style.pop);
@@ -357,15 +336,15 @@ public class BandManagerImplTest {
         Band band2 = newBand("Medial Banana", styles, Region.zahranici, 222.10, 9.3);
         Band band3 = newBand("Medial Banana", styles, Region.jihomoravsky, 743.00, 8.2);
 
-        instance.createBand(band1);
-        instance.createBand(band2);
-        instance.createBand(band3);
+        bandManager.createBand(band1);
+        bandManager.createBand(band2);
+        bandManager.createBand(band3);
         
         regions = new ArrayList<>();
         regions.add(Region.slovensko);
         
         List<Band> expected = Arrays.asList(band1);
-        List<Band> actual = new ArrayList<>(instance.findBandByRegion(regions));
+        List<Band> actual = new ArrayList<>(bandManager.findBandByRegion(regions));
         assertEquals(1, actual.size());
         assertDeepEquals(expected, actual);
 
@@ -373,7 +352,7 @@ public class BandManagerImplTest {
         regions.add(Region.jihomoravsky);
         regions.add(Region.zahranici);
         expected = Arrays.asList(band2, band3);
-        actual = new ArrayList<>(instance.findBandByRegion(regions));
+        actual = new ArrayList<>(bandManager.findBandByRegion(regions));
         assertEquals(2, actual.size());
 
         assertNotEquals(actual.get(0), actual.get(1));
@@ -390,7 +369,7 @@ public class BandManagerImplTest {
      */
     @Test
     public void testFindBandbyPriceRange() {
-        assertTrue(instance.findBandByPriceRange(0.0, 0.0).isEmpty());
+        assertTrue(bandManager.findBandByPriceRange(0.0, 0.0).isEmpty());
         
         List<Style> styles = new ArrayList<>();
         styles.add(Style.pop);
@@ -401,17 +380,17 @@ public class BandManagerImplTest {
         Band band2 = newBand("Medial Banana", styles, Region.zahranici, 222.10, 9.3);
         Band band3 = newBand("Medial Banana", styles, Region.slovensko, 743.00, 8.2);
 
-        instance.createBand(band1);
-        instance.createBand(band2);
-        instance.createBand(band3);
+        bandManager.createBand(band1);
+        bandManager.createBand(band2);
+        bandManager.createBand(band3);
 
         List<Band> expected = Arrays.asList(band1);
-        List<Band> actual = new ArrayList<>(instance.findBandByPriceRange(5.0, 78.20));
+        List<Band> actual = new ArrayList<>(bandManager.findBandByPriceRange(5.0, 78.20));
         assertEquals(1, actual.size());
         assertDeepEquals(expected, actual);
 
         expected = Arrays.asList(band2, band3);
-        actual = new ArrayList<>(instance.findBandByPriceRange(222.10, 800.20));
+        actual = new ArrayList<>(bandManager.findBandByPriceRange(222.10, 800.20));
         assertEquals(2, actual.size());
 
         assertNotEquals(actual.get(0), actual.get(1));
@@ -428,7 +407,7 @@ public class BandManagerImplTest {
      */
     @Test
     public void testFindBandByRate() {
-        assertTrue(instance.findBandByRate(0.0).isEmpty());
+        assertTrue(bandManager.findBandByRate(0.0).isEmpty());
         
         List<Style> styles = new ArrayList<>();
         styles.add(Style.pop);
@@ -438,16 +417,16 @@ public class BandManagerImplTest {
         styles.add(Style.reggae);
         Band band2 = newBand("Medial Banana", styles, Region.zahranici, 222.10, 8.0);
 
-        instance.createBand(band1);
-        instance.createBand(band2);
+        bandManager.createBand(band1);
+        bandManager.createBand(band2);
 
         List<Band> expected = Arrays.asList(band1);
-        List<Band> actual = new ArrayList<>(instance.findBandByRate(9.0));
+        List<Band> actual = new ArrayList<>(bandManager.findBandByRate(9.0));
         assertEquals(1, actual.size());
         assertDeepEquals(expected, actual);
 
         expected = Arrays.asList(band2, band1);
-        actual = new ArrayList<>(instance.findBandByRate(8.0));
+        actual = new ArrayList<>(bandManager.findBandByRate(8.0));
         assertEquals(2, actual.size());
 
         assertNotEquals(actual.get(0), actual.get(1));

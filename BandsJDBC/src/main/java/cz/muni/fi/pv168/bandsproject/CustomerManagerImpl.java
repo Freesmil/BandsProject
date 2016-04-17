@@ -3,9 +3,15 @@ package cz.muni.fi.pv168.bandsproject;
 import javax.sql.DataSource;
 import java.sql.*;
 import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
+import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 
 /**
  * Created by Lenka on 9.3.2016.
@@ -16,6 +22,7 @@ public class CustomerManagerImpl implements CustomerManager {
 
     public CustomerManagerImpl(DataSource dataSource) {
         this.dataSource = dataSource;
+        this.jdbcTemplateObject = new JdbcTemplate(dataSource);
     }
 
     @Override
@@ -25,8 +32,13 @@ public class CustomerManagerImpl implements CustomerManager {
             throw new IllegalArgumentException("customer id is already set");
         }
 
-        String SQL = "INSERT INTO CUSTOMER (name,phoneNumber,adress) VALUES (?,?,?)";
-        jdbcTemplateObject.update(SQL, customer.getName(), customer.getPhoneNumber(), customer.getAddress());
+        SimpleJdbcInsert insertCustomer = new SimpleJdbcInsert(jdbcTemplateObject).withTableName("customer").usingGeneratedKeyColumns("id");
+        Map<String, Object> parameters = new HashMap<>(2);
+        parameters.put("name", customer.getName());
+        parameters.put("phoneNumber", customer.getPhoneNumber());
+        parameters.put("address", customer.getAddress());
+        Number id = insertCustomer.executeAndReturnKey(parameters);
+        customer.setId(id.longValue());
     }
 
     @Override
@@ -35,9 +47,8 @@ public class CustomerManagerImpl implements CustomerManager {
         if(customer.getId() == null) {
             throw new IllegalArgumentException("customer id is null");
         }
-        
-        String SQL = "UPDATE CUSTOMER SET name = ?,phoneNumber = ?,adress = ? WHERE id = ?";
-        jdbcTemplateObject.update(SQL, customer.getName(), customer.getPhoneNumber(), customer.getAddress());
+        String SQL = "UPDATE CUSTOMER SET name = ?,phoneNumber = ?,address = ? WHERE id = ?";
+        jdbcTemplateObject.update(SQL, customer.getName(), customer.getPhoneNumber(), customer.getAddress(), customer.getId());
     }
 
     @Override
@@ -48,23 +59,27 @@ public class CustomerManagerImpl implements CustomerManager {
         if (customer.getId() == null) {
             throw new IllegalArgumentException("customer id is null");
         }
-        
-        String SQL = "DELETE FROM CUSTOMER WHERE id = ?";
-        jdbcTemplateObject.update(SQL, customer.getId()); //UPDATE??
+        jdbcTemplateObject.update("DELETE FROM CUSTOMER WHERE id = ?", customer.getId());
     }
     
     @Override
     public List<Customer> getAllCustomers() {
-        String SQL = "select * from CUSTOMER";
-        List<Customer> customers = jdbcTemplateObject.query(SQL, new CustomerMapper());
-        return customers;
+        try {
+            List<Customer> customers = jdbcTemplateObject.query("select * from customer", customerMapper);
+            return customers;
+        } catch (EmptyResultDataAccessException e) {
+            return null;
+        }
     }
 
     @Override
-    public Customer getCustomer(Long id)  throws ServiceFailureException {
-        String SQL = "SELECT * FROM CUSTOMER WHERE id = ?";
-        Customer customer = jdbcTemplateObject.queryForObject(SQL, new Object[]{id}, new CustomerMapper());
-        return customer;
+    public Customer getCustomer(Long id) {
+        try {
+            Customer customer = jdbcTemplateObject.queryForObject("SELECT * FROM CUSTOMER WHERE id = ?", customerMapper, id);
+            return customer;
+        } catch (EmptyResultDataAccessException e) {
+            return null;
+        }
     }
 
     /**
@@ -87,14 +102,15 @@ public class CustomerManagerImpl implements CustomerManager {
         }
     }
 
-    private class CustomerMapper implements RowMapper<Customer>{
+    private RowMapper<Customer> customerMapper = new RowMapper<Customer>() {
+        @Override
         public Customer mapRow(ResultSet rs, int rowNum) throws SQLException {
             Customer customer = new Customer();
             customer.setId(rs.getLong("id"));
             customer.setName(rs.getString("name"));
             customer.setPhoneNumber(rs.getString("phoneNumber"));
-            customer.setAddress(rs.getString("adress"));
+            customer.setAddress(rs.getString("address"));
             return customer;
         }
-    }
+    };
 }
