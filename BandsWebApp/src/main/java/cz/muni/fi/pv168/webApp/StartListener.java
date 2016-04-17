@@ -2,7 +2,7 @@ package cz.muni.fi.pv168.webApp;
 
 import cz.muni.fi.pv168.bandsproject.BandManager;
 import cz.muni.fi.pv168.bandsproject.CustomerManager;
-import cz.muni.fi.pv168.bandsproject.OrderManager;
+import cz.muni.fi.pv168.bandsproject.LeaseManager;
 import cz.muni.fi.pv168.bandsproject.SpringConfig;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -29,7 +29,7 @@ public class StartListener implements ServletContextListener {
         ApplicationContext springContext = new AnnotationConfigApplicationContext(SpringConfig.class);
         servletContext.setAttribute("customerManager", springContext.getBean("customerManager", CustomerManager.class));
         servletContext.setAttribute("bandManager", springContext.getBean("bandManager", BandManager.class));
-        servletContext.setAttribute("orderManager", springContext.getBean("orderManager", OrderManager.class));
+        servletContext.setAttribute("leaseManager", springContext.getBean("leaseManager", LeaseManager.class));
         log.info("vytvoreny manazery a ulozeny do atributu servletContextu");
     }
 

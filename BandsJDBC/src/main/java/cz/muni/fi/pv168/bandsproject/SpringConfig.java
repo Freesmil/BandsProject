@@ -57,7 +57,7 @@ public class SpringConfig {
     }
 
     @Bean
-    public LeaseManager orderManager() {
+    public LeaseManager leaseManager() {
         return new LeaseManagerImpl(dataSource());
     }
 }
