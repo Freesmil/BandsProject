@@ -50,7 +50,7 @@ public class BandManagerImpl implements BandManager{
         if(band.getId() == null) {
             throw new IllegalArgumentException("band id is null");
         }
-        String SQL = "UPDATE BAND SET name = ?,region = ?,pricePerHour = ?,rate = ? WHERE id = ?";
+        String SQL = "UPDATE band SET name = ?,region = ?,pricePerHour = ?,rate = ? WHERE id = ?";
         jdbcTemplateObject.update(SQL,band.getName(),band.getRegion().ordinal(),band.getPricePerHour(),band.getRate(),band.getId());
     }
 
@@ -68,7 +68,7 @@ public class BandManagerImpl implements BandManager{
     @Override
     public List<Band> getAllBands() {
         try {
-            List<Band> bands = jdbcTemplateObject.query("select * from BAND", bandMapper);
+            List<Band> bands = jdbcTemplateObject.query("select * from band", bandMapper);
             return bands;
         } catch (EmptyResultDataAccessException e) {
             return null;
@@ -78,7 +78,7 @@ public class BandManagerImpl implements BandManager{
     @Override
     public Band findBandById(Long id) throws ServiceFailureException {
         try {
-            Band band = jdbcTemplateObject.queryForObject("SELECT * FROM BAND WHERE id = ?", bandMapper, id);
+            Band band = jdbcTemplateObject.queryForObject("SELECT * FROM band WHERE id = ?", bandMapper, id);
             return band;
         } catch (EmptyResultDataAccessException e) {
             return null;
@@ -88,7 +88,7 @@ public class BandManagerImpl implements BandManager{
     @Override
     public List<Band> findBandByName(String name) throws ServiceFailureException {
         try {
-            List<Band> bands = jdbcTemplateObject.query("SELECT * FROM BAND WHERE LOWER(\"name\") LIKE ?", bandMapper, name);
+            List<Band> bands = jdbcTemplateObject.query("SELECT * FROM band WHERE LOWER(\"name\") LIKE ?", bandMapper, name);
             return bands;
         } catch (EmptyResultDataAccessException e) {
             return null;
@@ -100,7 +100,7 @@ public class BandManagerImpl implements BandManager{
         List<Band> bands = new ArrayList<>();
         try {
             for(Style s : styles) {
-                bands = jdbcTemplateObject.query("SELECT * FROM BAND LEFT JOIN band_styles " +
+                bands = jdbcTemplateObject.query("SELECT * FROM band LEFT JOIN band_styles " +
                         "ON band.id = band_styles.idBand and band_styles.style = ?", bandMapper, s.ordinal());
             }
         } catch (EmptyResultDataAccessException e) {
@@ -114,7 +114,7 @@ public class BandManagerImpl implements BandManager{
         List<Band> bands = new ArrayList<>();
         try {
             for(Region r: regions) {
-                bands = jdbcTemplateObject.query("SELECT * FROM BAND WHERE region = ?", bandMapper, r.ordinal());
+                bands = jdbcTemplateObject.query("SELECT * FROM band WHERE region = ?", bandMapper, r.ordinal());
             }
         } catch (EmptyResultDataAccessException e) {
             return null;
@@ -128,7 +128,7 @@ public class BandManagerImpl implements BandManager{
         try {
             bands = jdbcTemplateObject.query("SELECT * FROM band WHERE pricePerHour >= ? AND pricePerHour <= ?", bandMapper, from, to);
         } catch (EmptyResultDataAccessException e) {
-            return null;
+            return bands;
         }
         return bands;
     }
@@ -137,7 +137,7 @@ public class BandManagerImpl implements BandManager{
     public List<Band> findBandByRate(Double from) throws ServiceFailureException {
         List<Band> bands = new ArrayList<>();
         try {
-            bands = jdbcTemplateObject.query("SELECT * FROM BAND WHERE rate >= ?", bandMapper, from);
+            bands = jdbcTemplateObject.query("SELECT * FROM band WHERE rate >= ?", bandMapper, from);
         } catch (EmptyResultDataAccessException e) {
             return null;
         }
