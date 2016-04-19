@@ -133,9 +133,11 @@ public class BandManagerImplTest {
         Band band = newBand("Eufory", styles, Region.slovensko, 330.30, 6.5);
         bandManager.createBand(band);
         
-        Band band2 = newBand("Slize", styles, Region.zahranici, 30.30, 60.5);
-        bandManager.createBand(band2);
+        List<Style> styles2 = new ArrayList<>();
+        styles2.add(Style.rock);
         
+        Band band2 = newBand("Slize", styles2, Region.zahranici, 30.30, 60.5);
+        bandManager.createBand(band2);
         Long bandId = band.getId();
         
         // --- Name
@@ -374,7 +376,7 @@ public class BandManagerImplTest {
 
         expected = Arrays.asList(band2, band3);
         actual = new ArrayList<>(bandManager.findBandByPriceRange(222.10, 800.20));
-        assertEquals(3, actual.size());
+        assertEquals(2, actual.size());
 
         assertNotEquals(actual.get(0), actual.get(1));
         assertDeepNotEquals(actual.get(0), actual.get(1));
@@ -405,12 +407,12 @@ public class BandManagerImplTest {
 
         List<Band> expected = Arrays.asList(band1);
         List<Band> actual = new ArrayList<>(bandManager.findBandByRate(9.0));
-        assertEquals(2, actual.size());
+        assertEquals(1, actual.size());
         assertDeepEquals(expected, actual);
 
         expected = Arrays.asList(band2, band1);
         actual = new ArrayList<>(bandManager.findBandByRate(8.0));
-        assertEquals(3, actual.size());
+        assertEquals(2, actual.size());
 
         assertNotEquals(actual.get(0), actual.get(1));
         assertDeepNotEquals(actual.get(0), actual.get(1));
@@ -446,7 +448,7 @@ public class BandManagerImplTest {
         assertEquals(expected.getPricePerHour(), actual.getPricePerHour());
         assertEquals(expected.getRate(), actual.getRate());
         assertEquals(expected.getStyles().size(), actual.getStyles().size());
-        assertEquals(expected.getStylesString(expected.getStyles()), actual.getStylesString(actual.getStyles()));
+        assertTrue(expected.getStyles().equals(actual.getStyles()));
     }
     
     /**
@@ -462,7 +464,7 @@ public class BandManagerImplTest {
         if(!expected.getRegion().equals(actual.getRegion())) res = false;
         if(!Objects.equals(expected.getPricePerHour(), actual.getPricePerHour())) res = false;
         if(!Objects.equals(expected.getRate(), actual.getRate())) res = false;
-        //if(expected.equals(actual)) res = false;
+        if(expected.getStyles().equals(actual.getStyles())) res = false;
         assertFalse(res);
     }
 
