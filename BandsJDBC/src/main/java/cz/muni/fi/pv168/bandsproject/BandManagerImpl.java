@@ -103,11 +103,19 @@ public class BandManagerImpl implements BandManager{
     @Override
     public List<Style> getStylesBand(Number id) throws ServiceFailureException {
         
-        // ??? co tohle má kurva vracet ???
+        //List<Style> styles = jdbcTemplateObject.query("SELECT style FROM band_styles WHERE idBand = ?", (ResultSet rs, int rowNum) -> Style.values()[rs.getInt("style")], id);
+/*
+        List<Style> styles = jdbcTemplateObject.query("SELECT style FROM band_styles WHERE idBand = ?", new RowMapper<Style>(){
+            @Override
+            public Style mapRow(ResultSet rs, int rowNumber) throws SQLException {
+                System.out.println(" \n  kurva "+Style.values()[rs.getInt("style")]+" \n   ");
+                return Style.values()[rs.getInt("style")];
+            }
+        }, id);
+   */     
+        List<Style> styles = jdbcTemplateObject.queryForList("SELECT style FROM band_styles WHERE idBand = ?", Style.class, id);
         
-        String s = jdbcTemplateObject.query("SELECT style FROM band WHERE idBand = ?", bandMapper, id).toString();
-      
-        return null;
+        return styles;
     }
 
     @Override
@@ -124,6 +132,7 @@ public class BandManagerImpl implements BandManager{
     public Band findBandById(Long id) throws ServiceFailureException {
         try {
             Band band = jdbcTemplateObject.queryForObject("SELECT * FROM band WHERE id = ?", bandMapper, id);
+            band.setStyles(getStylesBand(id));
             return band;
         } catch (EmptyResultDataAccessException e) {
             return null;
