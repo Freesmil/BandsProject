@@ -60,4 +60,9 @@ public class Lease {
     public void setDuration(int duration) {
         this.duration = duration;
     }
+    
+    @Override
+    public String toString() {
+        return "ID: "+id+", customer_id: "+customer.getId()+", band_id: "+band.getId()+", date: "+date.toString()+", region: "+place+", duration: "+duration;
+    }
 }

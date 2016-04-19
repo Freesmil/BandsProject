@@ -1,10 +1,17 @@
 package cz.muni.fi.pv168.bandsproject;
 
-import javax.sql.DataSource;
-import java.sql.*;
+import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.List;
+import javax.sql.DataSource;
+import java.sql.*;
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.Map;
+import java.util.Date;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -39,14 +46,14 @@ public class LeaseManagerImpl implements LeaseManager{
     public void createLease(Lease lease) throws ServiceFailureException {
         validate(lease);
         if (lease.getId() != null) {
-            throw new IllegalArgumentException("band id is already set");
+            throw new IllegalArgumentException("Lease id is already set");
         }
         SimpleJdbcInsert insertLease = new SimpleJdbcInsert(jdbcTemplateObject).withTableName("lease").usingGeneratedKeyColumns("id");
         Map<String, Object> parameters = new HashMap<>(2);
         parameters.put("idBand", lease.getBand().getId());
         parameters.put("idCustomer", lease.getCustomer().getId());
-        parameters.put("date", lease.getDate().toString());
-        parameters.put("place", lease.getPlace().ordinal());
+        parameters.put("date", lease.getDate());
+        parameters.put("region", lease.getPlace().ordinal());
         parameters.put("duration", lease.getDuration());
         Number id = insertLease.executeAndReturnKey(parameters);
         lease.setId(id.longValue());
@@ -56,10 +63,10 @@ public class LeaseManagerImpl implements LeaseManager{
     public void updateLease(Lease lease) throws ServiceFailureException {
         validate(lease);
         if(lease.getId() == null) {
-            throw new IllegalArgumentException("band id is null");
+            throw new IllegalArgumentException("Lease id is null");
         }
-        String SQL = "UPDATE LEASE SET customer = ?,band = ?,date = ?,place = ?,duration = ? WHERE id = ?";
-        jdbcTemplateObject.update(SQL, lease.getCustomer().getId(), lease.getBand().getId(), lease.getDate().toString(),
+        String SQL = "UPDATE lease SET idBand = ?,idCustomer = ?,date = ?,region = ?,duration = ? WHERE id = ?";
+        jdbcTemplateObject.update(SQL, lease.getBand().getId(), lease.getCustomer().getId(), lease.getDate(),
         lease.getPlace().ordinal(), lease.getDuration(), lease.getId());
     }
 
@@ -71,13 +78,13 @@ public class LeaseManagerImpl implements LeaseManager{
         if (lease.getId() == null) {
             throw new IllegalArgumentException("lease id is null");
         }
-        jdbcTemplateObject.update("DELETE FROM LEASE WHERE id = ?", lease.getId());
+        jdbcTemplateObject.update("DELETE FROM lease WHERE id = ?", lease.getId());
     }
 
     @Override
     public Lease findLeaseById(Long id) {
         try {
-            Lease lease = jdbcTemplateObject.queryForObject("SELECT * FROM LEASE WHERE id = ?", leaseMapper, id);
+            Lease lease = jdbcTemplateObject.queryForObject("SELECT * FROM lease WHERE id = ?", leaseMapper, id);
             return lease;
         } catch (EmptyResultDataAccessException e) {
             return null;
@@ -87,7 +94,7 @@ public class LeaseManagerImpl implements LeaseManager{
     @Override
     public List<Lease> findAllLeases() {
         try {
-            List <Lease> leases = jdbcTemplateObject.query("select * from LEASE", leaseMapper);
+            List <Lease> leases = jdbcTemplateObject.query("SELECT * FROM lease", leaseMapper);
             return leases;
         } catch (EmptyResultDataAccessException e) {
             return null;
@@ -97,7 +104,7 @@ public class LeaseManagerImpl implements LeaseManager{
     @Override
     public List<Lease> findLeasesForBand(Band band) {
         try {
-            List <Lease> leases = jdbcTemplateObject.query("select * from LEASE WHERE idBand = ?", leaseMapper, band.getId());
+            List <Lease> leases = jdbcTemplateObject.query("SELECT * FROM lease WHERE idBand = ?", leaseMapper, band.getId());
             return leases;
         } catch (EmptyResultDataAccessException e) {
             return null;
@@ -107,7 +114,7 @@ public class LeaseManagerImpl implements LeaseManager{
     @Override
     public List<Lease> findLeasesForCustomer(Customer customer) {
         try {
-            List <Lease> leases = jdbcTemplateObject.query("select * from LEASE WHERE idCustomer = ?", leaseMapper, customer.getId());
+            List <Lease> leases = jdbcTemplateObject.query("SELECT * FROM lease WHERE idCustomer = ?", leaseMapper, customer.getId());
             return leases;
         } catch (EmptyResultDataAccessException e) {
             return null;
@@ -140,14 +147,14 @@ public class LeaseManagerImpl implements LeaseManager{
         }
     }
 
-    private RowMapper<Lease> leaseMapper = new RowMapper<Lease>() {
+    private RowMapper<Lease> leaseMapper = new RowMapper<Lease>(){
         @Override
         public Lease mapRow(ResultSet rs, int rowNum) throws SQLException {
             Lease lease = new Lease();
             lease.setId(rs.getLong("id"));
             lease.setBand(new BandManagerImpl(dataSource).findBandById(rs.getLong("idBand")));
             lease.setCustomer(new CustomerManagerImpl(dataSource).getCustomer(rs.getLong("idCustomer")));
-            lease.setDate(rs.getDate("date"));
+            lease.setDate(rs.getTimestamp("date"));
             lease.setPlace(Region.values()[rs.getInt("region")]);
             lease.setDuration(rs.getInt("duration"));
             return lease;

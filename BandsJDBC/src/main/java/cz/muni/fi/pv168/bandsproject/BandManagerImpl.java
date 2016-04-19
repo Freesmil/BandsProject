@@ -238,7 +238,6 @@ public class BandManagerImpl implements BandManager{
             Band band = new Band();
             band.setId(rs.getLong("id"));
             band.setBandName(rs.getString("name"));
-            //band.setStyles(convertStringToEnum(rs.getString("styles")));
             band.setRegion(Region.values()[rs.getInt("region")]);
             band.setPricePerHour(rs.getDouble("pricePerHour"));
             band.setRate(rs.getDouble("rate"));
