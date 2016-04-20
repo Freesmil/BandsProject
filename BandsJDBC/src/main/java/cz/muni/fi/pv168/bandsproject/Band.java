@@ -40,16 +40,6 @@ public class Band {
     public void addStyle(Style style) {
         styles.add(style);
     }
-    
-    public String getStylesString(List<Style> styles) {
-        String result = "";
-        
-        for(Style style: styles) {
-            result += style.ordinal()+",";
-        }
-        
-        return result.substring(0, result.length()-1);
-    }
 
     public Region getRegion() {
         return region;

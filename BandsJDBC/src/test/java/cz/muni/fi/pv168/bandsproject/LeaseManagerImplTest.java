@@ -56,7 +56,7 @@ public class LeaseManagerImplTest {
         Customer customer1 = newCustomer("Pepa", "666 123 456", "Kartouzska 69");
         customerManager.createCustomer(customer1);
         
-        Lease lease1 = newLease(band1, customer1, "02.05.2016", Region.jihomoravsky, 2);
+        Lease lease1 = newLease(band1, customer1, "08.08.2016", Region.jihomoravsky, 2);
         leaseManager.createLease(lease1);
         assertNotNull(lease1.getId());
         
@@ -73,7 +73,6 @@ public class LeaseManagerImplTest {
         Lease lease2 = newLease(anotherBand, customer2, "14.08.2016", Region.pardubicky, 3);
         leaseManager.createLease(lease2);
         assertNotNull(lease2.getId());
-        
         assertNotNull(leaseManager.findLeaseById(lease1.getId()));
         assertNotNull(leaseManager.findLeaseById(lease2.getId()));
         
@@ -114,6 +113,8 @@ public class LeaseManagerImplTest {
         leaseManager.createLease(lease2);
         
         
+        DateFormat format = new SimpleDateFormat("dd.mm.yyyy");
+        
         // ---- Duration
         lease.setDuration(50);
         
@@ -123,7 +124,7 @@ public class LeaseManagerImplTest {
         
         assertEquals(band.getId(), lease.getBand().getId());
         assertEquals(customer.getId(), lease.getCustomer().getId());
-        assertEquals("01.02.2016", lease.getDate().toString());
+        assertEquals(format.parse("01.02.2016"), lease.getDate());
         assertEquals(Region.jihocesky, lease.getPlace());
         assertEquals(50, lease.getDuration());
         
@@ -137,13 +138,12 @@ public class LeaseManagerImplTest {
         
         assertEquals(band.getId(), lease.getBand().getId());
         assertEquals(customer.getId(), lease.getCustomer().getId());
-        assertEquals("01.02.2016", lease.getDate().toString());
+        assertEquals(format.parse("01.02.2016"), lease.getDate());
         assertEquals(Region.jihomoravsky, lease.getPlace());
         assertEquals(50, lease.getDuration());
         
         
         // ---- Date
-        DateFormat format = new SimpleDateFormat("dd.mm.yyyy");
         Date date = format.parse("08.08.2016");
         lease.setDate(date);
         
@@ -153,7 +153,7 @@ public class LeaseManagerImplTest {
         
         assertEquals(band.getId(), lease.getBand().getId());
         assertEquals(customer.getId(), lease.getCustomer().getId());
-        assertEquals("08.08.2018", lease.getDate().toString());
+        assertEquals(format.parse("08.08.2016"), lease.getDate());
         assertEquals(Region.jihomoravsky, lease.getPlace());
         assertEquals(50, lease.getDuration());
         
@@ -167,7 +167,7 @@ public class LeaseManagerImplTest {
         
         assertEquals(band.getId(), lease.getBand().getId());
         assertEquals(customer2.getId(), lease.getCustomer().getId());
-        assertEquals("08.08.2018", lease.getDate().toString());
+        assertEquals(format.parse("08.08.2016"), lease.getDate());
         assertEquals(Region.jihomoravsky, lease.getPlace());
         assertEquals(50, lease.getDuration());
         
@@ -181,7 +181,7 @@ public class LeaseManagerImplTest {
         
         assertEquals(band2.getId(), lease.getBand().getId());
         assertEquals(customer2.getId(), lease.getCustomer().getId());
-        assertEquals("08.08.2018", lease.getDate().toString());
+        assertEquals(format.parse("08.08.2016"), lease.getDate());
         assertEquals(Region.jihomoravsky, lease.getPlace());
         assertEquals(50, lease.getDuration());
         
