@@ -39,7 +39,7 @@ public class BandsServlet extends HttpServlet {
             case "/add":
                 //na?ten� POST parametr? z formul�?e
                 String name = request.getParameter("name");
-                //String styles = request.getParameter("styles"); //prerobit na list??
+                String styles = request.getParameter("styles"); //prerobit na list??
                 Region region = Region.valueOf(request.getParameter("region"));
                 Double pricePerHour = Double.parseDouble(request.getParameter("pricePerHour"));
                 Double rate = Double.parseDouble(request.getParameter("rate"));
@@ -47,8 +47,8 @@ public class BandsServlet extends HttpServlet {
                 //kontrola vypln?n� hodnot
                 if (name == null
                         || name.length() == 0
-                        //|| styles == null
-                        //|| styles.length() == 0
+                        || styles == null
+                        || styles.length() == 0
                         || region == null
                         || pricePerHour < 0
                         || rate < 0) {
@@ -89,7 +89,7 @@ public class BandsServlet extends HttpServlet {
             case "/update":
                 //na?ten� POST parametr? z formul�?e
                 String uname = request.getParameter("name");
-                //String ustyles = request.getParameter("styles"); //prerobit na list??
+                String ustyles = request.getParameter("styles"); //prerobit na list??
                 Region uregion = Region.valueOf(request.getParameter("region"));
                 Double upricePerHour = Double.parseDouble(request.getParameter("pricePerHour"));
                 Double urate = Double.parseDouble(request.getParameter("rate"));
@@ -98,8 +98,8 @@ public class BandsServlet extends HttpServlet {
                 //kontrola vypln?n� hodnot
                 if (uname == null
                         || uname.length() == 0
-                        //|| ustyles == null
-                        //|| ustyles.length() == 0
+                        || ustyles == null
+                        || ustyles.length() == 0
                         || uregion == null
                         || upricePerHour < 0
                         || urate < 0

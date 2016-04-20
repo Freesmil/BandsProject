@@ -6,7 +6,7 @@
 <html>
 <body>
 
-<table border="1">
+<table border="1" cellpadding="5">
     <thead>
     <tr>
         <th>Nazev kapely</th>
@@ -18,17 +18,28 @@
     </thead>
     <c:forEach items="${bands}" var="band">
         <tr>
-            <form method="post" action="${pageContext.request.contextPath}/bands/update">
-                <td><input name="name" type="text" value="${band.name}" /></td>
-                <td><input name="style" type="text" value="${band.style}"/></td>
-                <td><input name="region" type="text" value="${band.region}"/></td>
-                <td><input name="pricePerHour" type="text" value="${band.pricePerHour}"/></td>
-                <td><input name="rate" type="text" value="${band.rate}"/></td>
-                <input type="hidden" name="id" value="${band.id}"/>
-                <td><input type="submit" value="Update"/></td>
-            </form>
-            <td><form method="post" action="${pageContext.request.contextPath}/bands/delete?id=${band.id}"
-                      style="margin-bottom: 0;"><input type="submit" value="Smazat"></form></td>
+            <%--<form method="post" action="${pageContext.request.contextPath}/bands/update">--%>
+                <%--<td><input name="name" type="text" value="${band.name}" /></td>--%>
+                <%--<td><input name="style" type="text" value="${band.style}"/></td>--%>
+                <%--<td><input name="region" type="text" value="${band.region}"/></td>--%>
+                <%--<td><input name="pricePerHour" type="text" value="${band.pricePerHour}"/></td>--%>
+                <%--<td><input name="rate" type="text" value="${band.rate}"/></td>--%>
+                <%--<input type="hidden" name="id" value="${band.id}"/>--%>
+                <%--<td><input type="submit" value="Update"/></td>--%>
+            <%--</form>--%>
+            <%--<td><form method="post" action="${pageContext.request.contextPath}/bands/delete?id=${band.id}"--%>
+                      <%--style="margin-bottom: 0;"><input type="submit" value="Smazat"></form></td>--%>
+            <td align="center"><c:out value="${band.name}"/></td>
+            <td align="center"><c:out value="${band.styles.toString()}"/></td>
+            <td align="center"><c:out value="${band.region}"/></td>
+            <td align="center"><c:out value="${band.pricePerHour}"/></td>
+            <td align="center"><c:out value="${band.rate}"/></td>
+
+            <td align="left" width="5%"><form method="post" action="${pageContext.request.contextPath}/bands/update?id=${band.id}"
+                                              style="margin-bottom: 0;"><input type="submit" value="Upravit"></form></td>
+
+            <td align="left" width="5%"><form method="post" action="${pageContext.request.contextPath}/bands/delete?id=${band.id}"
+                                              style="margin-bottom: 0;"><input type="submit" value="Smazat"></form></td>
         </tr>
     </c:forEach>
 </table>
@@ -42,7 +53,7 @@
 <form action="${pageContext.request.contextPath}/bands/add" method="post">
     <table>
         <tr>
-            <th>N�zev kapely:</th>
+            <th>Nazev kapely:</th>
             <td><input type="text" name="name" value="<c:out value='${param.name}'/>"/></td>
         </tr>
         <tr>
