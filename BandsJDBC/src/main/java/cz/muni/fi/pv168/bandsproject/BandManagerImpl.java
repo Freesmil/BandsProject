@@ -36,14 +36,15 @@ public class BandManagerImpl implements BandManager{
         SimpleJdbcInsert insertBand = new SimpleJdbcInsert(jdbcTemplateObject).withTableName("band").usingGeneratedKeyColumns("id");
         Map<String, Object> parameters = new HashMap<>(2);
         parameters.put("name", band.getName());
-        //styly?
         parameters.put("region", band.getRegion().ordinal());
         parameters.put("pricePerHour", band.getPricePerHour());
         parameters.put("rate", band.getRate());
         Number id = insertBand.executeAndReturnKey(parameters);
         band.setId(id.longValue());
+        
+        createStylesBand(band.getId(), band.getStyles());
     }
-
+    
     @Override
     public void updateBand(Band band) throws ServiceFailureException {
         validate(band);
@@ -52,6 +53,7 @@ public class BandManagerImpl implements BandManager{
         }
         String SQL = "UPDATE band SET name = ?,region = ?,pricePerHour = ?,rate = ? WHERE id = ?";
         jdbcTemplateObject.update(SQL,band.getName(),band.getRegion().ordinal(),band.getPricePerHour(),band.getRate(),band.getId());
+        updateStylesBand(band.getId(), band.getStyles());
     }
 
     @Override
@@ -63,12 +65,63 @@ public class BandManagerImpl implements BandManager{
             throw new IllegalArgumentException("band id is null");
         }
         jdbcTemplateObject.update("DELETE FROM band WHERE id = ?", band.getId());
+        updateStylesBand(band.getId(), band.getStyles());
+    }
+    
+    @Override
+    public void createStylesBand(Number id, List<Style> styles) throws ServiceFailureException {
+        for(Style style : styles){
+            SimpleJdbcInsert insertStyles = new SimpleJdbcInsert(jdbcTemplateObject).withTableName("band_styles").usingGeneratedKeyColumns("id");
+            Map<String, Object> parameters = new HashMap<>(2);
+            parameters.put("id", id);
+            parameters.put("style", style.ordinal());
+            insertStyles.executeAndReturnKey(parameters);
+        }
+    }
+    
+    @Override
+    public void updateStylesBand(Number id, List<Style> styles) throws ServiceFailureException {
+        deleteStylesBand(id);
+        for(Style style : styles){
+            SimpleJdbcInsert insertStyles = new SimpleJdbcInsert(jdbcTemplateObject).withTableName("band_styles").usingGeneratedKeyColumns("id");
+            Map<String, Object> parameters = new HashMap<>(2);
+            parameters.put("id", id);
+            parameters.put("style", style.ordinal());
+            insertStyles.executeAndReturnKey(parameters);
+        }
+    }
+    
+    @Override
+    public void deleteStylesBand(Number id) throws ServiceFailureException {
+        if (id == null) {
+            throw new IllegalArgumentException("band is null");
+        }
+        
+        jdbcTemplateObject.update("DELETE FROM band_styles WHERE idBand = ?", id);
+    }
+    
+    @Override
+    public List<Style> getStylesBand(Number id) throws ServiceFailureException {
+        
+        //List<Style> styles = jdbcTemplateObject.query("SELECT style FROM band_styles WHERE idBand = ?", (ResultSet rs, int rowNum) -> Style.values()[rs.getInt("style")], id);
+/*
+        List<Style> styles = jdbcTemplateObject.query("SELECT style FROM band_styles WHERE idBand = ?", new RowMapper<Style>(){
+            @Override
+            public Style mapRow(ResultSet rs, int rowNumber) throws SQLException {
+                System.out.println(" \n  kurva "+Style.values()[rs.getInt("style")]+" \n   ");
+                return Style.values()[rs.getInt("style")];
+            }
+        }, id);
+   */     
+        List<Style> styles = jdbcTemplateObject.queryForList("SELECT style FROM band_styles WHERE idBand = ?", Style.class, id);
+        
+        return styles;
     }
 
     @Override
     public List<Band> getAllBands() {
         try {
-            List<Band> bands = jdbcTemplateObject.query("select * from band", bandMapper);
+            List<Band> bands = jdbcTemplateObject.query("SELECT * FROM band", bandMapper);
             return bands;
         } catch (EmptyResultDataAccessException e) {
             return null;
@@ -79,6 +132,7 @@ public class BandManagerImpl implements BandManager{
     public Band findBandById(Long id) throws ServiceFailureException {
         try {
             Band band = jdbcTemplateObject.queryForObject("SELECT * FROM band WHERE id = ?", bandMapper, id);
+            band.setStyles(getStylesBand(id));
             return band;
         } catch (EmptyResultDataAccessException e) {
             return null;
@@ -88,7 +142,7 @@ public class BandManagerImpl implements BandManager{
     @Override
     public List<Band> findBandByName(String name) throws ServiceFailureException {
         try {
-            List<Band> bands = jdbcTemplateObject.query("SELECT * FROM band WHERE LOWER(\"name\") LIKE ?", bandMapper, name);
+            List<Band> bands = jdbcTemplateObject.query("SELECT * FROM band WHERE name= ?", bandMapper, name);
             return bands;
         } catch (EmptyResultDataAccessException e) {
             return null;
@@ -113,9 +167,11 @@ public class BandManagerImpl implements BandManager{
     public List<Band> findBandByRegion(List<Region> regions) {
         List<Band> bands = new ArrayList<>();
         try {
+            String regionsString = "";
             for(Region r: regions) {
-                bands = jdbcTemplateObject.query("SELECT * FROM band WHERE region = ?", bandMapper, r.ordinal());
+                regionsString += r.ordinal()+",";
             }
+            bands = jdbcTemplateObject.query("SELECT * FROM BAND WHERE region IN("+regionsString.substring(0, regionsString.length()-1)+")", bandMapper);
         } catch (EmptyResultDataAccessException e) {
             return null;
         }
@@ -126,9 +182,10 @@ public class BandManagerImpl implements BandManager{
     public List<Band> findBandByPriceRange(Double from, Double to) throws ServiceFailureException {
         List<Band> bands = new ArrayList<>();
         try {
-            bands = jdbcTemplateObject.query("SELECT * FROM band WHERE pricePerHour >= ? AND pricePerHour <= ?", bandMapper, from, to);
+            bands = jdbcTemplateObject.query("SELECT * FROM band "
+                    + "WHERE pricePerHour >= ? AND pricePerHour <= ?", bandMapper, from, to);
         } catch (EmptyResultDataAccessException e) {
-            return bands;
+            return null;
         }
         return bands;
     }
@@ -137,7 +194,8 @@ public class BandManagerImpl implements BandManager{
     public List<Band> findBandByRate(Double from) throws ServiceFailureException {
         List<Band> bands = new ArrayList<>();
         try {
-            bands = jdbcTemplateObject.query("SELECT * FROM band WHERE rate >= ?", bandMapper, from);
+            bands = jdbcTemplateObject.query("SELECT * FROM band " +
+                    "WHERE rate >= ?", bandMapper, from);
         } catch (EmptyResultDataAccessException e) {
             return null;
         }

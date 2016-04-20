@@ -40,6 +40,16 @@ public class Band {
     public void addStyle(Style style) {
         styles.add(style);
     }
+    
+    public String getStylesString(List<Style> styles) {
+        String result = "";
+        
+        for(Style style: styles) {
+            result += style.ordinal()+",";
+        }
+        
+        return result.substring(0, result.length()-1);
+    }
 
     public Region getRegion() {
         return region;
@@ -64,10 +74,10 @@ public class Band {
     public void setRate(Double rate) {
         this.rate = rate;
     }
-    /*
+    
     public String toString() {
         String ret = "id: " + id + ", band name: " + bandName + ", styles: ";
         ret += styles.toString();
         return ret + "region: " + region.toString() + ", price: " + pricePerHour + ", rate: " + rate;
-    }*/
+    }
 }

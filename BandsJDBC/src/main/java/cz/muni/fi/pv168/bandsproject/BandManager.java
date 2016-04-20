@@ -14,6 +14,14 @@ public interface BandManager {
     
     public void deleteBand(Band band);
     
+    public void createStylesBand(Number id, List<Style> styles);
+            
+    public void updateStylesBand(Number id, List<Style> styles);
+    
+    public void deleteStylesBand(Number id);
+    
+    public List<Style> getStylesBand(Number id);
+    
     public List<Band> getAllBands();
     
     public Band findBandById(Long id);
