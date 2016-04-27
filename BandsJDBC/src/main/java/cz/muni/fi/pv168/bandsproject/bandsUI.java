@@ -8,7 +8,7 @@ package cz.muni.fi.pv168.bandsproject;
 
 /**
  *
- * @author Tomáš
+ * @author Tomï¿½
  */
 public class bandsUI extends javax.swing.JFrame {
 
@@ -46,7 +46,15 @@ public class bandsUI extends javax.swing.JFrame {
             new String [] {
                 "Title 1", "Title 2", "Title 3", "Title 4"
             }
-        ));
+        ) {
+            boolean[] canEdit = new boolean [] {
+                false, false, false, false
+            };
+
+            public boolean isCellEditable(int rowIndex, int columnIndex) {
+                return canEdit [columnIndex];
+            }
+        });
         jScrollPane1.setViewportView(jTable1);
 
         jLabel1.setFont(new java.awt.Font("Arial", 0, 24)); // NOI18N
