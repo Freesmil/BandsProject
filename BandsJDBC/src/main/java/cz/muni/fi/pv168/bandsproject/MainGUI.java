@@ -5,17 +5,48 @@
  */
 package cz.muni.fi.pv168.bandsproject;
 
+import org.apache.commons.dbcp2.BasicDataSource;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.annotation.AnnotationConfigApplicationContext;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.PropertySource;
+import org.springframework.core.env.Environment;
+import org.springframework.jdbc.datasource.DataSourceTransactionManager;
+import org.springframework.jdbc.datasource.TransactionAwareDataSourceProxy;
+import org.springframework.transaction.PlatformTransactionManager;
+import org.springframework.transaction.annotation.EnableTransactionManagement;
+ 
+import javax.sql.DataSource;
+import java.io.IOException;
+import java.util.List;
 /**
  *
  * @author Tomáš
  */
-public class MainGUI extends javax.swing.JFrame {
 
+public class MainGUI extends javax.swing.JFrame {
+    
+    @Autowired
+    private CustomerManager customerManager;
+    
+    @Autowired
+    private BandManager bandManager;
+    
+    @Autowired
+    private LeaseManager leaseManager;
     /**
      * Creates new form MainGUI
      */
     public MainGUI() {
+        ApplicationContext ctx = new AnnotationConfigApplicationContext(MySpringConfig.class);
+        bandManager = ctx.getBean(BandManager.class);
+        customerManager = ctx.getBean(CustomerManager.class);
+        leaseManager = ctx.getBean(LeaseManager.class);
+        
         initComponents();
+        
         contentPanel.removeAll();
         contentPanel.add(firstContent);
         contentPanel.repaint();
@@ -159,7 +190,7 @@ public class MainGUI extends javax.swing.JFrame {
                 {null, null, null, null}
             },
             new String [] {
-                "Title 1", "Title 2", "Title 3", "Title 4"
+                "Name", "Region", "Style", "Price per hour", "Rate"
             }
         ));
         bandTableScroll.setViewportView(bandTable);
@@ -565,9 +596,10 @@ public class MainGUI extends javax.swing.JFrame {
 
     /**
      * @param args the command line arguments
+     * @throws java.io.IOException
      */
     public static void main(String args[]) {
-        /* Set the Nimbus look and feel */
+        /* Set the Nimbus look and feel */       
         //<editor-fold defaultstate="collapsed" desc=" Look and feel setting code (optional) ">
         /* If Nimbus (introduced in Java SE 6) is not available, stay with the default look and feel.
          * For details see http://download.oracle.com/javase/tutorial/uiswing/lookandfeel/plaf.html 
