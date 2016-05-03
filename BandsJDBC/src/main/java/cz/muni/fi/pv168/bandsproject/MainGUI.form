@@ -126,9 +126,15 @@
                   <Group type="102" alignment="0" attributes="0">
                       <EmptySpace min="-2" pref="20" max="-2" attributes="0"/>
                       <Group type="103" groupAlignment="0" attributes="0">
-                          <Component id="addBandButton" min="-2" max="-2" attributes="0"/>
                           <Component id="bandListLabel" min="-2" max="-2" attributes="0"/>
-                          <Component id="bandTableScroll" min="-2" pref="882" max="-2" attributes="0"/>
+                          <Group type="103" alignment="0" groupAlignment="1" max="-2" attributes="0">
+                              <Group type="102" attributes="0">
+                                  <Component id="addBandButton" min="-2" max="-2" attributes="0"/>
+                                  <EmptySpace max="32767" attributes="0"/>
+                                  <Component id="deleteBandButton" min="-2" max="-2" attributes="0"/>
+                              </Group>
+                              <Component id="bandTableScroll" min="-2" pref="882" max="-2" attributes="0"/>
+                          </Group>
                       </Group>
                       <EmptySpace pref="22" max="32767" attributes="0"/>
                   </Group>
@@ -142,7 +148,10 @@
                       <EmptySpace type="unrelated" max="-2" attributes="0"/>
                       <Component id="bandTableScroll" min="-2" pref="357" max="-2" attributes="0"/>
                       <EmptySpace type="separate" max="-2" attributes="0"/>
-                      <Component id="addBandButton" min="-2" max="-2" attributes="0"/>
+                      <Group type="103" groupAlignment="3" attributes="0">
+                          <Component id="addBandButton" alignment="3" min="-2" max="-2" attributes="0"/>
+                          <Component id="deleteBandButton" alignment="3" min="-2" max="-2" attributes="0"/>
+                      </Group>
                       <EmptySpace pref="17" max="32767" attributes="0"/>
                   </Group>
               </Group>
@@ -167,7 +176,7 @@
                 <Component class="javax.swing.JTable" name="bandTable">
                   <Properties>
                     <Property name="model" type="javax.swing.table.TableModel" editor="org.netbeans.modules.form.RADConnectionPropertyEditor">
-                      <Connection code="new javax.swing.table.DefaultTableModel(&#xa;    new Object [][] {&#xa;        {null, null, null, null},&#xa;        {null, null, null, null},&#xa;        {null, null, null, null},&#xa;        {null, null, null, null}&#xa;    },&#xa;    new String [] {&#xa;        &quot;Name&quot;, &quot;Region&quot;, &quot;Style&quot;, &quot;Price per hour&quot;, &quot;Rate&quot;&#xa;    }&#xa;)" type="code"/>
+                      <Connection code="new javax.swing.table.DefaultTableModel(&#xa;    new Object [][] {&#xa;        {null, null, null, null},&#xa;        {null, null, null, null},&#xa;        {null, null, null, null},&#xa;        {null, null, null, null}&#xa;    },&#xa;    new String [] {&#xa;        &quot;Id&quot;, &quot;Name&quot;, &quot;Region&quot;, &quot;Style&quot;, &quot;Price per hour&quot;, &quot;Rate&quot;&#xa;    }&#xa;)" type="code"/>
                     </Property>
                   </Properties>
                 </Component>
@@ -179,6 +188,14 @@
               </Properties>
               <Events>
                 <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="addBandButtonActionPerformed"/>
+              </Events>
+            </Component>
+            <Component class="javax.swing.JButton" name="deleteBandButton">
+              <Properties>
+                <Property name="text" type="java.lang.String" value="Delete"/>
+              </Properties>
+              <Events>
+                <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="deleteBandButtonActionPerformed"/>
               </Events>
             </Component>
           </SubComponents>
@@ -216,9 +233,15 @@
                   <Group type="102" alignment="0" attributes="0">
                       <EmptySpace min="-2" pref="20" max="-2" attributes="0"/>
                       <Group type="103" groupAlignment="0" attributes="0">
-                          <Component id="addCustomerButton" alignment="0" min="-2" max="-2" attributes="0"/>
                           <Component id="customerListLabel" alignment="0" min="-2" max="-2" attributes="0"/>
-                          <Component id="customerTableScroll" alignment="0" min="-2" pref="882" max="-2" attributes="0"/>
+                          <Group type="103" alignment="0" groupAlignment="1" max="-2" attributes="0">
+                              <Group type="102" alignment="0" attributes="0">
+                                  <Component id="addCustomerButton" min="-2" max="-2" attributes="0"/>
+                                  <EmptySpace max="32767" attributes="0"/>
+                                  <Component id="deleteCustomerButton" min="-2" max="-2" attributes="0"/>
+                              </Group>
+                              <Component id="customerTableScroll" alignment="0" min="-2" pref="882" max="-2" attributes="0"/>
+                          </Group>
                       </Group>
                       <EmptySpace pref="22" max="32767" attributes="0"/>
                   </Group>
@@ -232,7 +255,10 @@
                       <EmptySpace type="unrelated" max="-2" attributes="0"/>
                       <Component id="customerTableScroll" min="-2" pref="357" max="-2" attributes="0"/>
                       <EmptySpace type="separate" max="-2" attributes="0"/>
-                      <Component id="addCustomerButton" min="-2" max="-2" attributes="0"/>
+                      <Group type="103" groupAlignment="3" attributes="0">
+                          <Component id="addCustomerButton" alignment="3" min="-2" max="-2" attributes="0"/>
+                          <Component id="deleteCustomerButton" alignment="3" min="-2" max="-2" attributes="0"/>
+                      </Group>
                       <EmptySpace pref="17" max="32767" attributes="0"/>
                   </Group>
               </Group>
@@ -276,6 +302,14 @@
                 <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="addCustomerButtonActionPerformed"/>
               </Events>
             </Component>
+            <Component class="javax.swing.JButton" name="deleteCustomerButton">
+              <Properties>
+                <Property name="text" type="java.lang.String" value="Delete"/>
+              </Properties>
+              <Events>
+                <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="deleteCustomerButtonActionPerformed"/>
+              </Events>
+            </Component>
           </SubComponents>
         </Container>
         <Container class="javax.swing.JPanel" name="listOrders">
@@ -291,9 +325,15 @@
                   <Group type="102" alignment="0" attributes="0">
                       <EmptySpace min="-2" pref="20" max="-2" attributes="0"/>
                       <Group type="103" groupAlignment="0" attributes="0">
-                          <Component id="addOrderButton" alignment="0" min="-2" max="-2" attributes="0"/>
                           <Component id="orderListLabel" alignment="0" min="-2" max="-2" attributes="0"/>
-                          <Component id="orderTableScroll" alignment="0" min="-2" pref="882" max="-2" attributes="0"/>
+                          <Group type="103" alignment="0" groupAlignment="1" max="-2" attributes="0">
+                              <Group type="102" alignment="0" attributes="0">
+                                  <Component id="addOrderButton" min="-2" max="-2" attributes="0"/>
+                                  <EmptySpace max="32767" attributes="0"/>
+                                  <Component id="deleteOrderButton" min="-2" max="-2" attributes="0"/>
+                              </Group>
+                              <Component id="orderTableScroll" alignment="0" min="-2" pref="882" max="-2" attributes="0"/>
+                          </Group>
                       </Group>
                       <EmptySpace pref="22" max="32767" attributes="0"/>
                   </Group>
@@ -307,7 +347,10 @@
                       <EmptySpace type="unrelated" max="-2" attributes="0"/>
                       <Component id="orderTableScroll" min="-2" pref="357" max="-2" attributes="0"/>
                       <EmptySpace type="separate" max="-2" attributes="0"/>
-                      <Component id="addOrderButton" min="-2" max="-2" attributes="0"/>
+                      <Group type="103" groupAlignment="3" attributes="0">
+                          <Component id="addOrderButton" alignment="3" min="-2" max="-2" attributes="0"/>
+                          <Component id="deleteOrderButton" alignment="3" min="-2" max="-2" attributes="0"/>
+                      </Group>
                       <EmptySpace pref="17" max="32767" attributes="0"/>
                   </Group>
               </Group>
@@ -349,6 +392,14 @@
               </Properties>
               <Events>
                 <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="addOrderButtonActionPerformed"/>
+              </Events>
+            </Component>
+            <Component class="javax.swing.JButton" name="deleteOrderButton">
+              <Properties>
+                <Property name="text" type="java.lang.String" value="Delete"/>
+              </Properties>
+              <Events>
+                <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="deleteOrderButtonActionPerformed"/>
               </Events>
             </Component>
           </SubComponents>
@@ -429,11 +480,12 @@
             <Component class="javax.swing.JComboBox" name="orderBandSelect">
               <Properties>
                 <Property name="model" type="javax.swing.ComboBoxModel" editor="org.netbeans.modules.form.editors2.ComboBoxModelEditor">
-                  <StringArray count="4">
-                    <StringItem index="0" value="Item 1"/>
-                    <StringItem index="1" value="Item 2"/>
-                    <StringItem index="2" value="Item 3"/>
-                    <StringItem index="3" value="Item 4"/>
+                  <StringArray count="5">
+                    <StringItem index="0" value="Five Live"/>
+                    <StringItem index="1" value="Kab&#xe1;t"/>
+                    <StringItem index="2" value="Hork&#xfd;&#x17e;e Sl&#xed;&#x17e;e"/>
+                    <StringItem index="3" value="Wohnout"/>
+                    <StringItem index="4" value=" "/>
                   </StringArray>
                 </Property>
               </Properties>
@@ -608,6 +660,9 @@
               <Properties>
                 <Property name="text" type="java.lang.String" value="Create"/>
               </Properties>
+              <Events>
+                <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="createCustomerButtonActionPerformed"/>
+              </Events>
             </Component>
           </SubComponents>
         </Container>
@@ -630,7 +685,7 @@
                           <Component id="bandRegionLabel" alignment="0" min="-2" max="-2" attributes="0"/>
                           <Component id="createBandLabel" alignment="0" min="-2" max="-2" attributes="0"/>
                           <Component id="bandNameLabel" alignment="0" min="-2" max="-2" attributes="0"/>
-                          <Component id="bandStylesSelect" pref="270" max="32767" attributes="0"/>
+                          <Component id="bandStylesScroll" pref="270" max="32767" attributes="0"/>
                           <Component id="bandRegionSelect" alignment="0" max="32767" attributes="0"/>
                           <Component id="bandNameText" alignment="0" max="32767" attributes="0"/>
                           <Component id="bandPriceText" alignment="0" max="32767" attributes="0"/>
@@ -655,7 +710,7 @@
                       <EmptySpace min="-2" pref="14" max="-2" attributes="0"/>
                       <Component id="bandStylesLabel" min="-2" max="-2" attributes="0"/>
                       <EmptySpace max="-2" attributes="0"/>
-                      <Component id="bandStylesSelect" min="-2" max="-2" attributes="0"/>
+                      <Component id="bandStylesScroll" min="-2" max="-2" attributes="0"/>
                       <EmptySpace type="unrelated" max="-2" attributes="0"/>
                       <Component id="bandPriceLabel" min="-2" max="-2" attributes="0"/>
                       <EmptySpace max="-2" attributes="0"/>
@@ -704,14 +759,14 @@
                 <Property name="text" type="java.lang.String" value="Region: "/>
               </Properties>
             </Component>
-            <Container class="javax.swing.JScrollPane" name="bandStylesSelect">
+            <Container class="javax.swing.JScrollPane" name="bandStylesScroll">
               <AuxValues>
                 <AuxValue name="autoScrollPane" type="java.lang.Boolean" value="true"/>
               </AuxValues>
 
               <Layout class="org.netbeans.modules.form.compat2.layouts.support.JScrollPaneSupportLayout"/>
               <SubComponents>
-                <Component class="javax.swing.JList" name="jList1">
+                <Component class="javax.swing.JList" name="bandStylesSelect">
                   <Properties>
                     <Property name="model" type="javax.swing.ListModel" editor="org.netbeans.modules.form.RADConnectionPropertyEditor">
                       <Connection code="new javax.swing.DefaultComboBoxModel&lt;&gt;(Style.values())" type="code"/>
@@ -742,6 +797,9 @@
               <Properties>
                 <Property name="text" type="java.lang.String" value="Create"/>
               </Properties>
+              <Events>
+                <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="createBandButtonActionPerformed"/>
+              </Events>
             </Component>
           </SubComponents>
         </Container>

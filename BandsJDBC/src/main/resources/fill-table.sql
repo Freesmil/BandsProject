@@ -29,3 +29,10 @@ INSERT INTO customer (name, phoneNumber, aDdress) VALUES('Pedro De La Vedro','+3
 INSERT INTO customer (name, phoneNumber, aDdress) VALUES('Fucimu Nani','+466 922 448 336', 'Juuu 12');
 INSERT INTO customer (name, phoneNumber, aDdress) VALUES('Chaldoryny Kapaloto','+000 922 448 336', 'Jau 12');
 INSERT INTO customer (name, phoneNumber, aDdress) VALUES('Zdislav Uzdichcal','+123 321 123 123', 'Aau 2');
+
+INSERT INTO lease (idBand, idCustomer, date, region, duration) VALUES(1, 3, TIMESTAMP('2016-08-08 20:00:00') , 5, 8);
+INSERT INTO lease (idBand, idCustomer, date, region, duration) VALUES(4, 5, TIMESTAMP('2016-05-06 20:00:00'), 4, 7);
+INSERT INTO lease (idBand, idCustomer, date, region, duration) VALUES(1, 2, TIMESTAMP('2016-09-08 20:00:00'), 3, 6);
+INSERT INTO lease (idBand, idCustomer, date, region, duration) VALUES(2, 2, TIMESTAMP('2016-07-11 20:00:00'), 2, 1);
+INSERT INTO lease (idBand, idCustomer, date, region, duration) VALUES(3, 4, TIMESTAMP('2016-11-01 20:00:00'), 2, 4);
+INSERT INTO lease (idBand, idCustomer, date, region, duration) VALUES(1, 2, TIMESTAMP('2016-04-06 20:00:00'), 1, 10);

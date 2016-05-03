@@ -5,22 +5,13 @@
  */
 package cz.muni.fi.pv168.bandsproject;
 
-import org.apache.commons.dbcp2.BasicDataSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
-import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.PropertySource;
-import org.springframework.core.env.Environment;
-import org.springframework.jdbc.datasource.DataSourceTransactionManager;
-import org.springframework.jdbc.datasource.TransactionAwareDataSourceProxy;
-import org.springframework.transaction.PlatformTransactionManager;
-import org.springframework.transaction.annotation.EnableTransactionManagement;
- 
-import javax.sql.DataSource;
+
 import java.io.IOException;
 import java.util.List;
+import javax.swing.table.DefaultTableModel;
 /**
  *
  * @author Tomáš
@@ -36,6 +27,11 @@ public class MainGUI extends javax.swing.JFrame {
     
     @Autowired
     private LeaseManager leaseManager;
+    
+    private List<Band> bands;
+    private List<Customer> customers;
+    private List<Lease> orders;
+    
     /**
      * Creates new form MainGUI
      */
@@ -45,12 +41,62 @@ public class MainGUI extends javax.swing.JFrame {
         customerManager = ctx.getBean(CustomerManager.class);
         leaseManager = ctx.getBean(LeaseManager.class);
         
+        bands = bandManager.getAllBands();
+        customers = customerManager.getAllCustomers();
+        orders = leaseManager.findAllLeases();
+
         initComponents();
+        setTables();
         
         contentPanel.removeAll();
         contentPanel.add(firstContent);
         contentPanel.repaint();
         contentPanel.revalidate();
+    }
+    
+    private void setTables() {
+        DefaultTableModel customerModel = new DefaultTableModel(new String[]{"Id", "Name", "Number", "Address"}, 0);
+        
+        customers.stream().forEach((customer) -> {
+            String id = customer.getId().toString();
+            String name = customer.getName();
+            String address = customer.getAddress();
+            String number = customer.getPhoneNumber();
+            customerModel.addRow(new Object[]{id, name, address, number});
+        });
+        
+        customerTable.setModel(customerModel);
+        
+        
+        DefaultTableModel bandModel = new DefaultTableModel(new String[]{"Id", "Name", "Region", "Styles", "Price", "Rate"}, 0);
+        
+        bands.stream().forEach((band) -> {
+            String id = band.getId().toString();
+            String name = band.getName();
+            String region = band.getRegion().toString();
+            String styles = band.getStyles().toString();
+            String price = band.getPricePerHour().toString();
+            String rate = band.getRate().toString();
+            bandModel.addRow(new Object[]{id, name, region, styles, price, rate});
+        });
+        
+        bandTable.setModel(bandModel);
+        
+        
+        DefaultTableModel leaseModel = new DefaultTableModel(new String[]{"Id", "Band id", "Customer id", "Date", "Region", "Duration"}, 0);
+        
+        orders.stream().forEach((lease) -> {
+            String id = lease.getId().toString();
+            String bandId = lease.getBand().getId().toString();
+            String customerId = lease.getCustomer().getId().toString();
+            String date = lease.getDate().toString();
+            String region = lease.getPlace().toString();
+            String duration = Integer.toString(lease.getDuration());
+            leaseModel.addRow(new Object[]{id, bandId, customerId, date, region, duration});
+        });
+        
+        orderTable.setModel(leaseModel);
+        
     }
 
     /**
@@ -73,17 +119,20 @@ public class MainGUI extends javax.swing.JFrame {
         bandTableScroll = new javax.swing.JScrollPane();
         bandTable = new javax.swing.JTable();
         addBandButton = new javax.swing.JButton();
+        deleteBandButton = new javax.swing.JButton();
         firstContent = new javax.swing.JPanel();
         listCustomer = new javax.swing.JPanel();
         customerListLabel = new javax.swing.JLabel();
         customerTableScroll = new javax.swing.JScrollPane();
         customerTable = new javax.swing.JTable();
         addCustomerButton = new javax.swing.JButton();
+        deleteCustomerButton = new javax.swing.JButton();
         listOrders = new javax.swing.JPanel();
         orderListLabel = new javax.swing.JLabel();
         orderTableScroll = new javax.swing.JScrollPane();
         orderTable = new javax.swing.JTable();
         addOrderButton = new javax.swing.JButton();
+        deleteOrderButton = new javax.swing.JButton();
         createOrder = new javax.swing.JPanel();
         createOrderLabel = new javax.swing.JLabel();
         orderBandSelect = new javax.swing.JComboBox<>();
@@ -112,8 +161,8 @@ public class MainGUI extends javax.swing.JFrame {
         bandNameLabel = new javax.swing.JLabel();
         bandRegionSelect = new javax.swing.JComboBox<>();
         bandRegionLabel = new javax.swing.JLabel();
-        bandStylesSelect = new javax.swing.JScrollPane();
-        jList1 = new javax.swing.JList<>();
+        bandStylesScroll = new javax.swing.JScrollPane();
+        bandStylesSelect = new javax.swing.JList<>();
         bandStylesLabel = new javax.swing.JLabel();
         bandPriceText = new javax.swing.JTextField();
         bandPriceLabel = new javax.swing.JLabel();
@@ -190,7 +239,7 @@ public class MainGUI extends javax.swing.JFrame {
                 {null, null, null, null}
             },
             new String [] {
-                "Name", "Region", "Style", "Price per hour", "Rate"
+                "Id", "Name", "Region", "Style", "Price per hour", "Rate"
             }
         ));
         bandTableScroll.setViewportView(bandTable);
@@ -202,6 +251,13 @@ public class MainGUI extends javax.swing.JFrame {
             }
         });
 
+        deleteBandButton.setText("Delete");
+        deleteBandButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                deleteBandButtonActionPerformed(evt);
+            }
+        });
+
         javax.swing.GroupLayout listBandLayout = new javax.swing.GroupLayout(listBand);
         listBand.setLayout(listBandLayout);
         listBandLayout.setHorizontalGroup(
@@ -209,9 +265,13 @@ public class MainGUI extends javax.swing.JFrame {
             .addGroup(listBandLayout.createSequentialGroup()
                 .addGap(20, 20, 20)
                 .addGroup(listBandLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(addBandButton)
                     .addComponent(bandListLabel)
-                    .addComponent(bandTableScroll, javax.swing.GroupLayout.PREFERRED_SIZE, 882, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addGroup(listBandLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
+                        .addGroup(listBandLayout.createSequentialGroup()
+                            .addComponent(addBandButton)
+                            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                            .addComponent(deleteBandButton))
+                        .addComponent(bandTableScroll, javax.swing.GroupLayout.PREFERRED_SIZE, 882, javax.swing.GroupLayout.PREFERRED_SIZE)))
                 .addContainerGap(22, Short.MAX_VALUE))
         );
         listBandLayout.setVerticalGroup(
@@ -222,7 +282,9 @@ public class MainGUI extends javax.swing.JFrame {
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addComponent(bandTableScroll, javax.swing.GroupLayout.PREFERRED_SIZE, 357, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(18, 18, 18)
-                .addComponent(addBandButton)
+                .addGroup(listBandLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(addBandButton)
+                    .addComponent(deleteBandButton))
                 .addContainerGap(17, Short.MAX_VALUE))
         );
 
@@ -264,6 +326,13 @@ public class MainGUI extends javax.swing.JFrame {
             }
         });
 
+        deleteCustomerButton.setText("Delete");
+        deleteCustomerButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                deleteCustomerButtonActionPerformed(evt);
+            }
+        });
+
         javax.swing.GroupLayout listCustomerLayout = new javax.swing.GroupLayout(listCustomer);
         listCustomer.setLayout(listCustomerLayout);
         listCustomerLayout.setHorizontalGroup(
@@ -271,9 +340,13 @@ public class MainGUI extends javax.swing.JFrame {
             .addGroup(listCustomerLayout.createSequentialGroup()
                 .addGap(20, 20, 20)
                 .addGroup(listCustomerLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(addCustomerButton)
                     .addComponent(customerListLabel)
-                    .addComponent(customerTableScroll, javax.swing.GroupLayout.PREFERRED_SIZE, 882, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addGroup(listCustomerLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
+                        .addGroup(javax.swing.GroupLayout.Alignment.LEADING, listCustomerLayout.createSequentialGroup()
+                            .addComponent(addCustomerButton)
+                            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                            .addComponent(deleteCustomerButton))
+                        .addComponent(customerTableScroll, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.PREFERRED_SIZE, 882, javax.swing.GroupLayout.PREFERRED_SIZE)))
                 .addContainerGap(22, Short.MAX_VALUE))
         );
         listCustomerLayout.setVerticalGroup(
@@ -284,7 +357,9 @@ public class MainGUI extends javax.swing.JFrame {
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addComponent(customerTableScroll, javax.swing.GroupLayout.PREFERRED_SIZE, 357, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(18, 18, 18)
-                .addComponent(addCustomerButton)
+                .addGroup(listCustomerLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(addCustomerButton)
+                    .addComponent(deleteCustomerButton))
                 .addContainerGap(17, Short.MAX_VALUE))
         );
 
@@ -313,6 +388,13 @@ public class MainGUI extends javax.swing.JFrame {
             }
         });
 
+        deleteOrderButton.setText("Delete");
+        deleteOrderButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                deleteOrderButtonActionPerformed(evt);
+            }
+        });
+
         javax.swing.GroupLayout listOrdersLayout = new javax.swing.GroupLayout(listOrders);
         listOrders.setLayout(listOrdersLayout);
         listOrdersLayout.setHorizontalGroup(
@@ -320,9 +402,13 @@ public class MainGUI extends javax.swing.JFrame {
             .addGroup(listOrdersLayout.createSequentialGroup()
                 .addGap(20, 20, 20)
                 .addGroup(listOrdersLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(addOrderButton)
                     .addComponent(orderListLabel)
-                    .addComponent(orderTableScroll, javax.swing.GroupLayout.PREFERRED_SIZE, 882, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addGroup(listOrdersLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
+                        .addGroup(javax.swing.GroupLayout.Alignment.LEADING, listOrdersLayout.createSequentialGroup()
+                            .addComponent(addOrderButton)
+                            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                            .addComponent(deleteOrderButton))
+                        .addComponent(orderTableScroll, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.PREFERRED_SIZE, 882, javax.swing.GroupLayout.PREFERRED_SIZE)))
                 .addContainerGap(22, Short.MAX_VALUE))
         );
         listOrdersLayout.setVerticalGroup(
@@ -333,7 +419,9 @@ public class MainGUI extends javax.swing.JFrame {
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addComponent(orderTableScroll, javax.swing.GroupLayout.PREFERRED_SIZE, 357, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(18, 18, 18)
-                .addComponent(addOrderButton)
+                .addGroup(listOrdersLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(addOrderButton)
+                    .addComponent(deleteOrderButton))
                 .addContainerGap(17, Short.MAX_VALUE))
         );
 
@@ -342,7 +430,7 @@ public class MainGUI extends javax.swing.JFrame {
         createOrderLabel.setFont(new java.awt.Font("Tahoma", 0, 18)); // NOI18N
         createOrderLabel.setText("Create Order");
 
-        orderBandSelect.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Item 1", "Item 2", "Item 3", "Item 4" }));
+        orderBandSelect.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Five Live", "Kabát", "Horkýže Slíže", "Wohnout", " " }));
 
         orderBandLabel.setText("Band:");
 
@@ -435,6 +523,11 @@ public class MainGUI extends javax.swing.JFrame {
         customerNameText.setToolTipText("Fill the customer name");
 
         createCustomerButton.setText("Create");
+        createCustomerButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                createCustomerButtonActionPerformed(evt);
+            }
+        });
 
         javax.swing.GroupLayout createCustomerLayout = new javax.swing.GroupLayout(createCustomer);
         createCustomer.setLayout(createCustomerLayout);
@@ -489,8 +582,8 @@ public class MainGUI extends javax.swing.JFrame {
 
         bandRegionLabel.setText("Region: ");
 
-        jList1.setModel(new javax.swing.DefaultComboBoxModel<>(Style.values()));
-        bandStylesSelect.setViewportView(jList1);
+        bandStylesSelect.setModel(new javax.swing.DefaultComboBoxModel<>(Style.values()));
+        bandStylesScroll.setViewportView(bandStylesSelect);
 
         bandStylesLabel.setText("Styles:");
 
@@ -499,6 +592,11 @@ public class MainGUI extends javax.swing.JFrame {
         bandPriceLabel.setText("Price per hour:");
 
         createBandButton.setText("Create");
+        createBandButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                createBandButtonActionPerformed(evt);
+            }
+        });
 
         javax.swing.GroupLayout createBandLayout = new javax.swing.GroupLayout(createBand);
         createBand.setLayout(createBandLayout);
@@ -513,7 +611,7 @@ public class MainGUI extends javax.swing.JFrame {
                     .addComponent(bandRegionLabel)
                     .addComponent(createBandLabel)
                     .addComponent(bandNameLabel)
-                    .addComponent(bandStylesSelect, javax.swing.GroupLayout.DEFAULT_SIZE, 270, Short.MAX_VALUE)
+                    .addComponent(bandStylesScroll, javax.swing.GroupLayout.DEFAULT_SIZE, 270, Short.MAX_VALUE)
                     .addComponent(bandRegionSelect, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addComponent(bandNameText)
                     .addComponent(bandPriceText))
@@ -535,7 +633,7 @@ public class MainGUI extends javax.swing.JFrame {
                 .addGap(14, 14, 14)
                 .addComponent(bandStylesLabel)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(bandStylesSelect, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addComponent(bandStylesScroll, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addComponent(bandPriceLabel)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
@@ -594,9 +692,51 @@ public class MainGUI extends javax.swing.JFrame {
         contentPanel.revalidate();
     }//GEN-LAST:event_addCustomerButtonActionPerformed
 
+    private void createBandButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_createBandButtonActionPerformed
+        //Band band = newBand(bandNameText.getText(), Integer.parseInt(bandRegionSelect.getSelectedIndex()), bandStylesSelect.getSelectedValuesList(), );
+        //bandManager.createBand(band);
+    }//GEN-LAST:event_createBandButtonActionPerformed
+
+    private void createCustomerButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_createCustomerButtonActionPerformed
+        Customer customer = new Customer();
+        customer.setAddress(customerAddressText.getText());
+        customer.setName(customerNameText.getText());
+        customer.setPhoneNumber(customerPhoneText.getText());
+        customerManager.createCustomer(customer);
+        
+        DefaultTableModel customerModel = (DefaultTableModel) customerTable.getModel();
+        customerModel.addRow(new Object[]{customer.getId().toString(), customer.getName(), customer.getAddress(), customer.getPhoneNumber()});
+        customerTable.setModel(customerModel);
+        
+        contentPanel.removeAll();
+        contentPanel.add(listCustomer);
+        contentPanel.repaint();
+        contentPanel.revalidate();
+    }//GEN-LAST:event_createCustomerButtonActionPerformed
+
+    private void deleteOrderButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_deleteOrderButtonActionPerformed
+        DefaultTableModel orderModel = (DefaultTableModel) orderTable.getModel();
+        orderModel.removeRow(orderTable.getSelectedRow());
+        orderTable.getModel().getValueAt(orderTable.getSelectedRow(), 0);
+        orderTable.setModel(orderModel);
+    }//GEN-LAST:event_deleteOrderButtonActionPerformed
+
+    private void deleteCustomerButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_deleteCustomerButtonActionPerformed
+        DefaultTableModel customerModel = (DefaultTableModel) customerTable.getModel();
+        customerModel.removeRow(customerTable.getSelectedRow());
+        customerTable.getModel().getValueAt(customerTable.getSelectedRow(), 0);
+        customerTable.setModel(customerModel);
+    }//GEN-LAST:event_deleteCustomerButtonActionPerformed
+
+    private void deleteBandButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_deleteBandButtonActionPerformed
+        DefaultTableModel bandModel = (DefaultTableModel) bandTable.getModel();
+        bandModel.removeRow(bandTable.getSelectedRow());
+        bandTable.getModel().getValueAt(bandTable.getSelectedRow(), 0);
+        bandTable.setModel(bandModel);
+    }//GEN-LAST:event_deleteBandButtonActionPerformed
+
     /**
      * @param args the command line arguments
-     * @throws java.io.IOException
      */
     public static void main(String args[]) {
         /* Set the Nimbus look and feel */       
@@ -642,7 +782,8 @@ public class MainGUI extends javax.swing.JFrame {
     private javax.swing.JLabel bandRegionLabel;
     private javax.swing.JComboBox<Region> bandRegionSelect;
     private javax.swing.JLabel bandStylesLabel;
-    private javax.swing.JScrollPane bandStylesSelect;
+    private javax.swing.JScrollPane bandStylesScroll;
+    private javax.swing.JList<Style> bandStylesSelect;
     private javax.swing.JTable bandTable;
     private javax.swing.JScrollPane bandTableScroll;
     private javax.swing.JButton bandsButton;
@@ -666,9 +807,11 @@ public class MainGUI extends javax.swing.JFrame {
     private javax.swing.JTable customerTable;
     private javax.swing.JScrollPane customerTableScroll;
     private javax.swing.JButton customersButton;
+    private javax.swing.JButton deleteBandButton;
+    private javax.swing.JButton deleteCustomerButton;
+    private javax.swing.JButton deleteOrderButton;
     private javax.swing.JPanel firstContent;
     private javax.swing.JLabel jLabel1;
-    private javax.swing.JList<Style> jList1;
     private javax.swing.JPanel listBand;
     private javax.swing.JPanel listCustomer;
     private javax.swing.JPanel listOrders;
