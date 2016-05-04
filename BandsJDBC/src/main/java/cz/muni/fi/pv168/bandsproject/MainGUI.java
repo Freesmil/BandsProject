@@ -174,23 +174,24 @@ public class MainGUI extends javax.swing.JFrame {
 
         jLabel1.setFont(new java.awt.Font("Tahoma", 1, 24)); // NOI18N
         jLabel1.setForeground(new java.awt.Color(255, 255, 255));
-        jLabel1.setText("Band Manager");
+        java.util.ResourceBundle bundle = java.util.ResourceBundle.getBundle("cz/muni/fi/pv168/bandsproject/Bundle"); // NOI18N
+        jLabel1.setText(bundle.getString("MainGUI.jLabel1.text")); // NOI18N
 
-        bandsButton.setText("Bands");
+        bandsButton.setText(bundle.getString("MainGUI.bandsButton.text")); // NOI18N
         bandsButton.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 bandsButtonActionPerformed(evt);
             }
         });
 
-        customersButton.setText("Customers");
+        customersButton.setText(bundle.getString("MainGUI.customersButton.text")); // NOI18N
         customersButton.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 customersButtonActionPerformed(evt);
             }
         });
 
-        ordersButton.setText("Orders");
+        ordersButton.setText(bundle.getString("MainGUI.ordersButton.text")); // NOI18N
         ordersButton.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 ordersButtonActionPerformed(evt);
@@ -229,7 +230,7 @@ public class MainGUI extends javax.swing.JFrame {
         contentPanel.setLayout(new java.awt.CardLayout());
 
         bandListLabel.setFont(new java.awt.Font("Tahoma", 0, 18)); // NOI18N
-        bandListLabel.setText("Bands");
+        bandListLabel.setText(bundle.getString("MainGUI.bandListLabel.text")); // NOI18N
 
         bandTable.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
@@ -244,14 +245,14 @@ public class MainGUI extends javax.swing.JFrame {
         ));
         bandTableScroll.setViewportView(bandTable);
 
-        addBandButton.setText("Add");
+        addBandButton.setText(bundle.getString("MainGUI.addBandButton.text")); // NOI18N
         addBandButton.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 addBandButtonActionPerformed(evt);
             }
         });
 
-        deleteBandButton.setText("Delete");
+        deleteBandButton.setText(bundle.getString("MainGUI.deleteBandButton.text")); // NOI18N
         deleteBandButton.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 deleteBandButtonActionPerformed(evt);
@@ -304,7 +305,7 @@ public class MainGUI extends javax.swing.JFrame {
         contentPanel.add(firstContent, "card5");
 
         customerListLabel.setFont(new java.awt.Font("Tahoma", 0, 18)); // NOI18N
-        customerListLabel.setText("Customers");
+        customerListLabel.setText(bundle.getString("MainGUI.customerListLabel.text")); // NOI18N
 
         customerTable.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
@@ -319,14 +320,14 @@ public class MainGUI extends javax.swing.JFrame {
         ));
         customerTableScroll.setViewportView(customerTable);
 
-        addCustomerButton.setText("Add");
+        addCustomerButton.setText(bundle.getString("MainGUI.addCustomerButton.text")); // NOI18N
         addCustomerButton.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 addCustomerButtonActionPerformed(evt);
             }
         });
 
-        deleteCustomerButton.setText("Delete");
+        deleteCustomerButton.setText(bundle.getString("MainGUI.deleteCustomerButton.text")); // NOI18N
         deleteCustomerButton.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 deleteCustomerButtonActionPerformed(evt);
@@ -366,7 +367,7 @@ public class MainGUI extends javax.swing.JFrame {
         contentPanel.add(listCustomer, "card2");
 
         orderListLabel.setFont(new java.awt.Font("Tahoma", 0, 18)); // NOI18N
-        orderListLabel.setText("Orders");
+        orderListLabel.setText(bundle.getString("MainGUI.orderListLabel.text")); // NOI18N
 
         orderTable.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
@@ -381,14 +382,14 @@ public class MainGUI extends javax.swing.JFrame {
         ));
         orderTableScroll.setViewportView(orderTable);
 
-        addOrderButton.setText("Add");
+        addOrderButton.setText(bundle.getString("MainGUI.addOrderButton.text")); // NOI18N
         addOrderButton.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 addOrderButtonActionPerformed(evt);
             }
         });
 
-        deleteOrderButton.setText("Delete");
+        deleteOrderButton.setText(bundle.getString("MainGUI.deleteOrderButton.text")); // NOI18N
         deleteOrderButton.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 deleteOrderButtonActionPerformed(evt);
@@ -428,30 +429,30 @@ public class MainGUI extends javax.swing.JFrame {
         contentPanel.add(listOrders, "card2");
 
         createOrderLabel.setFont(new java.awt.Font("Tahoma", 0, 18)); // NOI18N
-        createOrderLabel.setText("Create Order");
+        createOrderLabel.setText(bundle.getString("MainGUI.createOrderLabel.text")); // NOI18N
 
         orderBandSelect.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Five Live", "Kabát", "Horkýže Slíže", "Wohnout", " " }));
 
-        orderBandLabel.setText("Band:");
+        orderBandLabel.setText(bundle.getString("MainGUI.orderBandLabel.text")); // NOI18N
 
-        orderCustomerLabel.setText("Customer:");
+        orderCustomerLabel.setText(bundle.getString("MainGUI.orderCustomerLabel.text")); // NOI18N
 
         orderCustomerSelect.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Item 1", "Item 2", "Item 3", "Item 4" }));
 
         orderDurationSelect.setModel(new javax.swing.SpinnerNumberModel(1, 1, 12, 1));
 
-        orderDurationLabel.setText("Duration:");
+        orderDurationLabel.setText(bundle.getString("MainGUI.orderDurationLabel.text")); // NOI18N
 
         orderRegionSelect.setModel(new javax.swing.DefaultComboBoxModel<>(Region.values()));
         orderRegionSelect.setSelectedIndex(0);
 
-        orderRegionLabel.setText("Region:");
+        orderRegionLabel.setText(bundle.getString("MainGUI.orderRegionLabel.text")); // NOI18N
 
-        orderDateLabel.setText("Date:");
+        orderDateLabel.setText(bundle.getString("MainGUI.orderDateLabel.text")); // NOI18N
 
         orderDateSelect.setModel(new javax.swing.SpinnerDateModel());
 
-        createOrderButton.setText("Create");
+        createOrderButton.setText(bundle.getString("MainGUI.createOrderButton.text")); // NOI18N
 
         javax.swing.GroupLayout createOrderLayout = new javax.swing.GroupLayout(createOrder);
         createOrder.setLayout(createOrderLayout);
@@ -508,21 +509,21 @@ public class MainGUI extends javax.swing.JFrame {
         contentPanel.add(createOrder, "card8");
 
         createCustomerLabel.setFont(new java.awt.Font("Tahoma", 0, 18)); // NOI18N
-        createCustomerLabel.setText("Create customer");
+        createCustomerLabel.setText(bundle.getString("MainGUI.createCustomerLabel.text")); // NOI18N
 
-        customerNameLabel.setText("Name:");
+        customerNameLabel.setText(bundle.getString("MainGUI.customerNameLabel.text")); // NOI18N
 
-        customerAddressText.setToolTipText("Fill the customer address");
+        customerAddressText.setToolTipText(bundle.getString("MainGUI.customerAddressText.toolTipText")); // NOI18N
 
-        customerAddressLabel.setText("Address");
+        customerAddressLabel.setText(bundle.getString("MainGUI.customerAddressLabel.text")); // NOI18N
 
-        customerPhoneText.setToolTipText("Fill the customer phone");
+        customerPhoneText.setToolTipText(bundle.getString("MainGUI.customerPhoneText.toolTipText")); // NOI18N
 
-        customerPhoneLabel.setText("Phone:");
+        customerPhoneLabel.setText(bundle.getString("MainGUI.customerPhoneLabel.text")); // NOI18N
 
-        customerNameText.setToolTipText("Fill the customer name");
+        customerNameText.setToolTipText(bundle.getString("MainGUI.customerNameText.toolTipText")); // NOI18N
 
-        createCustomerButton.setText("Create");
+        createCustomerButton.setText(bundle.getString("MainGUI.createCustomerButton.text")); // NOI18N
         createCustomerButton.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 createCustomerButtonActionPerformed(evt);
@@ -571,27 +572,27 @@ public class MainGUI extends javax.swing.JFrame {
         contentPanel.add(createCustomer, "card8");
 
         createBandLabel.setFont(new java.awt.Font("Tahoma", 0, 18)); // NOI18N
-        createBandLabel.setText("Create band");
+        createBandLabel.setText(bundle.getString("MainGUI.createBandLabel.text")); // NOI18N
 
-        bandNameText.setToolTipText("Fill the band name");
+        bandNameText.setToolTipText(bundle.getString("MainGUI.bandNameText.toolTipText")); // NOI18N
 
-        bandNameLabel.setText("Name:");
+        bandNameLabel.setText(bundle.getString("MainGUI.bandNameLabel.text")); // NOI18N
 
         bandRegionSelect.setModel(new javax.swing.DefaultComboBoxModel<>(Region.values()));
         bandRegionSelect.setSelectedIndex(0);
 
-        bandRegionLabel.setText("Region: ");
+        bandRegionLabel.setText(bundle.getString("MainGUI.bandRegionLabel.text")); // NOI18N
 
         bandStylesSelect.setModel(new javax.swing.DefaultComboBoxModel<>(Style.values()));
         bandStylesScroll.setViewportView(bandStylesSelect);
 
-        bandStylesLabel.setText("Styles:");
+        bandStylesLabel.setText(bundle.getString("MainGUI.bandStylesLabel.text")); // NOI18N
 
-        bandPriceText.setToolTipText("Fill the price of band");
+        bandPriceText.setToolTipText(bundle.getString("MainGUI.bandPriceText.toolTipText")); // NOI18N
 
-        bandPriceLabel.setText("Price per hour:");
+        bandPriceLabel.setText(bundle.getString("MainGUI.bandPriceLabel.text")); // NOI18N
 
-        createBandButton.setText("Create");
+        createBandButton.setText(bundle.getString("MainGUI.createBandButton.text")); // NOI18N
         createBandButton.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 createBandButtonActionPerformed(evt);
