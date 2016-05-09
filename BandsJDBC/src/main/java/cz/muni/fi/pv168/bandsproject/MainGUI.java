@@ -12,12 +12,17 @@ import org.springframework.context.annotation.AnnotationConfigApplicationContext
 import java.io.IOException;
 import java.util.List;
 import javax.swing.table.DefaultTableModel;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 /**
  *
  * @author Tomáš
  */
 
 public class MainGUI extends javax.swing.JFrame {
+    
+    final static Logger log = LoggerFactory.getLogger(MainGUI.class);
     
     @Autowired
     private CustomerManager customerManager;
@@ -453,6 +458,11 @@ public class MainGUI extends javax.swing.JFrame {
         orderDateSelect.setModel(new javax.swing.SpinnerDateModel());
 
         createOrderButton.setText(bundle.getString("MainGUI.createOrderButton.text")); // NOI18N
+        createOrderButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                createOrderButtonActionPerformed(evt);
+            }
+        });
 
         javax.swing.GroupLayout createOrderLayout = new javax.swing.GroupLayout(createOrder);
         createOrder.setLayout(createOrderLayout);
@@ -694,8 +704,22 @@ public class MainGUI extends javax.swing.JFrame {
     }//GEN-LAST:event_addCustomerButtonActionPerformed
 
     private void createBandButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_createBandButtonActionPerformed
-        //Band band = newBand(bandNameText.getText(), Integer.parseInt(bandRegionSelect.getSelectedIndex()), bandStylesSelect.getSelectedValuesList(), );
-        //bandManager.createBand(band);
+        Band band = new Band();
+        band.setBandName(bandNameText.getText());
+        band.setRegion(Region.values()[bandRegionSelect.getSelectedIndex()]);
+        band.setRate(0.0);
+        band.setPricePerHour(Double.parseDouble(bandPriceText.getText()));
+        band.setStyles(bandStylesSelect.getSelectedValuesList());
+        bandManager.createBand(band);
+        
+        DefaultTableModel bandModel = (DefaultTableModel) bandTable.getModel();
+        bandModel.addRow(new Object[]{band.getId().toString(), band.getName(), band.getRegion(), band.getStyles(), band.getPricePerHour(), band.getRate()});
+        bandTable.setModel(bandModel);
+        
+        contentPanel.removeAll();
+        contentPanel.add(listBand);
+        contentPanel.repaint();
+        contentPanel.revalidate();
     }//GEN-LAST:event_createBandButtonActionPerformed
 
     private void createCustomerButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_createCustomerButtonActionPerformed
@@ -736,6 +760,27 @@ public class MainGUI extends javax.swing.JFrame {
         bandTable.setModel(bandModel);
     }//GEN-LAST:event_deleteBandButtonActionPerformed
 
+    private void createOrderButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_createOrderButtonActionPerformed
+        Lease order = new Lease();
+        Integer bandId = orderBandSelect.getSelectedIndex() + 1;
+        order.setBand(bandManager.findBandById(bandId.longValue()));
+        Integer customerId = orderBandSelect.getSelectedIndex() + 1;
+        order.setCustomer(customerManager.getCustomer(customerId.longValue()));
+        //order.setDate(orderDateSelect.getValue());
+        //order.setDuration(orderDurationSelect.getValue().toString());
+        order.setPlace(Region.values()[orderRegionSelect.getSelectedIndex()]);
+        leaseManager.createLease(order);
+        
+        DefaultTableModel orderModel = (DefaultTableModel) orderTable.getModel();
+        orderModel.addRow(new Object[]{order.getId().toString(), order.getBand().getId().toString(), order.getCustomer().getId().toString(), order.getDate().toString(), order.getPlace().toString(), Integer.toString(order.getDuration())});
+        orderTable.setModel(orderModel);
+        
+        contentPanel.removeAll();
+        contentPanel.add(listOrders);
+        contentPanel.repaint();
+        contentPanel.revalidate();
+    }//GEN-LAST:event_createOrderButtonActionPerformed
+
     /**
      * @param args the command line arguments
      */
@@ -762,7 +807,8 @@ public class MainGUI extends javax.swing.JFrame {
             java.util.logging.Logger.getLogger(MainGUI.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         }
         //</editor-fold>
-
+        
+        log.info(" ###  Application is running  \\(^o^)/  ### ");
         /* Create and display the form */
         java.awt.EventQueue.invokeLater(new Runnable() {
             public void run() {

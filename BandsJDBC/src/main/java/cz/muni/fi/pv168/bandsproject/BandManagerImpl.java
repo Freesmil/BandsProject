@@ -9,6 +9,8 @@ import javax.sql.DataSource;
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.Map;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -22,6 +24,8 @@ public class BandManagerImpl implements BandManager{
     private final DataSource dataSource;
     private JdbcTemplate jdbcTemplateObject;
     
+    final static Logger log = LoggerFactory.getLogger(MainGUI.class);
+    
     public BandManagerImpl(DataSource dataSource) {
         this.dataSource = dataSource;
         this.jdbcTemplateObject = new JdbcTemplate(dataSource);
@@ -31,6 +35,7 @@ public class BandManagerImpl implements BandManager{
     public void createBand(Band band) throws ServiceFailureException { 
         validate(band);
         if (band.getId() != null) {
+            log.error("Band ID is already set");
             throw new IllegalArgumentException("band id is already set");
         }
         SimpleJdbcInsert insertBand = new SimpleJdbcInsert(jdbcTemplateObject).withTableName("band").usingGeneratedKeyColumns("id");
@@ -40,6 +45,7 @@ public class BandManagerImpl implements BandManager{
         parameters.put("pricePerHour", band.getPricePerHour());
         parameters.put("rate", band.getRate());
         Number id = insertBand.executeAndReturnKey(parameters);
+        log.info("Band created ("+band.toString()+")");
         band.setId(id.longValue());
         
         createStylesBand(band.getId(), band.getStyles());
@@ -49,23 +55,28 @@ public class BandManagerImpl implements BandManager{
     public void updateBand(Band band) throws ServiceFailureException {
         validate(band);
         if(band.getId() == null) {
+            log.error("Band ID is NULL ("+band.toString()+")");
             throw new IllegalArgumentException("band id is null");
         }
         String SQL = "UPDATE band SET name = ?,region = ?,pricePerHour = ?,rate = ? WHERE id = ?";
         jdbcTemplateObject.update(SQL,band.getName(),band.getRegion().ordinal(),band.getPricePerHour(),band.getRate(),band.getId());
         updateStylesBand(band.getId(), band.getStyles());
+        log.info("Band updated (SQL: "+SQL+")");
     }
 
     @Override
     public void deleteBand(Band band) throws ServiceFailureException {
         if (band == null) {
+            log.error("Band is NULL ("+band.toString()+")");
             throw new IllegalArgumentException("band is null");
         }
         if (band.getId() == null) {
+            log.error("Band ID is NULL");
             throw new IllegalArgumentException("band id is null");
         }
         deleteStylesBand(band.getId());
         jdbcTemplateObject.update("DELETE FROM band WHERE id = ?", band.getId());
+        log.info("Band deleted ("+band.toString()+")");
     }
     
     @Override
@@ -94,6 +105,7 @@ public class BandManagerImpl implements BandManager{
     @Override
     public void deleteStylesBand(Long id) throws ServiceFailureException {
         if (id == null) {
+            log.error("Band ID is NULL (ID: "+id+")");
             throw new IllegalArgumentException("band is null");
         }
         
@@ -213,21 +225,27 @@ public class BandManagerImpl implements BandManager{
      */
     private void validate(Band band) throws IllegalArgumentException {
         if (band == null) {
+            log.error("Band is NULL ("+band.toString()+")");
             throw new IllegalArgumentException("band is null");
         }
         if (band.getName() == null) {
+            log.error("Band name is NULL ("+band.toString()+")");
             throw new IllegalArgumentException("band name is null");
         }
         if (band.getStyles() == null) {
+            log.error("Band styles is NULL ("+band.toString()+")");
             throw new IllegalArgumentException("band styles is null");
         }
         if (band.getRegion() == null) {
+            log.error("Band region is NULL ("+band.toString()+")");
             throw new IllegalArgumentException("band region is null");
         }
         if (band.getPricePerHour() < 0) {
+            log.error("Band price is negative ("+band.toString()+")");
             throw new IllegalArgumentException("band price per hour is negative");
         }
         if (band.getRate() < 0) {
+            log.error("Band rate is negative ("+band.toString()+")");
             throw new IllegalArgumentException("band rate is negative");
         }
     }

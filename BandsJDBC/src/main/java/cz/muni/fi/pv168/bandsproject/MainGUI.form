@@ -604,6 +604,9 @@
                   <ResourceString bundle="cz/muni/fi/pv168/bandsproject/Bundle.properties" key="MainGUI.createOrderButton.text" replaceFormat="java.util.ResourceBundle.getBundle(&quot;{bundleNameSlashes}&quot;).getString(&quot;{key}&quot;)"/>
                 </Property>
               </Properties>
+              <Events>
+                <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="createOrderButtonActionPerformed"/>
+              </Events>
             </Component>
           </SubComponents>
         </Container>

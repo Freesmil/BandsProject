@@ -1,5 +1,6 @@
 package cz.muni.fi.pv168.bandsproject;
 
+import static cz.muni.fi.pv168.bandsproject.CustomerManagerImpl.log;
 import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.List;
@@ -12,6 +13,7 @@ import java.util.Map;
 import java.util.Date;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import org.slf4j.LoggerFactory;
 
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -24,9 +26,11 @@ import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 public class LeaseManagerImpl implements LeaseManager{
     private final DataSource dataSource;
     private JdbcTemplate jdbcTemplateObject;
-
+    
     private BandManager bandManager;
     private CustomerManager customerManager;
+    
+    final static org.slf4j.Logger log = LoggerFactory.getLogger(MainGUI.class);
 
     public LeaseManagerImpl(DataSource dataSource) {
         this.dataSource = dataSource;
@@ -46,6 +50,7 @@ public class LeaseManagerImpl implements LeaseManager{
     public void createLease(Lease lease) throws ServiceFailureException {
         validate(lease);
         if (lease.getId() != null) {
+            log.error("Lease ID is already set ("+lease.toString()+")");
             throw new IllegalArgumentException("Lease id is already set");
         }
         SimpleJdbcInsert insertLease = new SimpleJdbcInsert(jdbcTemplateObject).withTableName("lease").usingGeneratedKeyColumns("id");
@@ -56,6 +61,7 @@ public class LeaseManagerImpl implements LeaseManager{
         parameters.put("region", lease.getPlace().ordinal());
         parameters.put("duration", lease.getDuration());
         Number id = insertLease.executeAndReturnKey(parameters);
+        log.info("Lease created ("+lease.toString()+")");
         lease.setId(id.longValue());
     }
 
@@ -63,22 +69,27 @@ public class LeaseManagerImpl implements LeaseManager{
     public void updateLease(Lease lease) throws ServiceFailureException {
         validate(lease);
         if(lease.getId() == null) {
+            log.error("Lease ID is NULL ("+lease.toString()+")");
             throw new IllegalArgumentException("Lease id is null");
         }
         String SQL = "UPDATE lease SET idBand = ?,idCustomer = ?,date = ?,region = ?,duration = ? WHERE id = ?";
         jdbcTemplateObject.update(SQL, lease.getBand().getId(), lease.getCustomer().getId(), lease.getDate(),
         lease.getPlace().ordinal(), lease.getDuration(), lease.getId());
+        log.info("Lease updated SQL ("+SQL+")");
     }
 
     @Override
     public void deleteLease(Lease lease) throws ServiceFailureException {
         if (lease == null) {
+            log.error("Lease is NULL ("+lease.toString()+")");
             throw new IllegalArgumentException("lease is null");
         }
         if (lease.getId() == null) {
+            log.error("Lease ID is NULL ("+lease.toString()+")");
             throw new IllegalArgumentException("lease id is null");
         }
         jdbcTemplateObject.update("DELETE FROM lease WHERE id = ?", lease.getId());
+        log.info("Lease deleted ("+lease.toString()+")");
     }
 
     @Override
@@ -128,21 +139,27 @@ public class LeaseManagerImpl implements LeaseManager{
      */
     private void validate(Lease lease) throws IllegalArgumentException {
         if (lease == null) {
+            log.error("Lease is NULL ("+lease.toString()+")");
             throw new IllegalArgumentException("lease is null");
         }
         if (lease.getCustomer() == null) {
+            log.error("Lease customer_ID is NULL ("+lease.toString()+")");
             throw new IllegalArgumentException("customer in lease is null");
         }
         if (lease.getBand() == null) {
+            log.error("Lease band_ID is NULL ("+lease.toString()+")");
             throw new IllegalArgumentException("band in lease is null");
         }
         if (lease.getDate() == null) {
+            log.error("Lease date is NULL ("+lease.toString()+")");
             throw new IllegalArgumentException("date in lease is null");
         }
         if (lease.getPlace() == null) {
+            log.error("Lease place is NULL ("+lease.toString()+")");
             throw new IllegalArgumentException("place is null");
         }
         if (lease.getDuration() <= 0) {
+            log.error("Lease duration is negative ("+lease.toString()+")");
             throw new IllegalArgumentException("duration is zero or negative");
         }
     }
