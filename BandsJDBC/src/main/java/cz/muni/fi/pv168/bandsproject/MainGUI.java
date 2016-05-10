@@ -10,6 +10,8 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 
 import java.io.IOException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.List;
 import javax.swing.table.DefaultTableModel;
 
@@ -766,8 +768,8 @@ public class MainGUI extends javax.swing.JFrame {
         order.setBand(bandManager.findBandById(bandId.longValue()));
         Integer customerId = orderBandSelect.getSelectedIndex() + 1;
         order.setCustomer(customerManager.getCustomer(customerId.longValue()));
-        //order.setDate(orderDateSelect.getValue());
-        //order.setDuration(orderDurationSelect.getValue().toString());
+        order.setDate((Date)orderDateSelect.getValue());
+        order.setDuration(Integer.parseInt(orderDurationSelect.getValue().toString()));
         order.setPlace(Region.values()[orderRegionSelect.getSelectedIndex()]);
         leaseManager.createLease(order);
         
