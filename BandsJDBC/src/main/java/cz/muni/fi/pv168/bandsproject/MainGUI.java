@@ -13,6 +13,7 @@ import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
+import javax.swing.DefaultComboBoxModel;
 import javax.swing.table.DefaultTableModel;
 
 import org.slf4j.Logger;
@@ -59,6 +60,18 @@ public class MainGUI extends javax.swing.JFrame {
         contentPanel.add(firstContent);
         contentPanel.repaint();
         contentPanel.revalidate();
+        
+        DefaultComboBoxModel dcmBand = new DefaultComboBoxModel();
+        bands.stream().forEach((band) -> {
+            dcmBand.addElement(band.getName());
+        });
+        orderBandSelect.setModel(dcmBand);
+        
+        DefaultComboBoxModel dcmCustomer = new DefaultComboBoxModel();
+        customers.stream().forEach((customer) -> {
+            dcmCustomer.addElement(customer.getName());
+        });
+        orderCustomerSelect.setModel(dcmCustomer);
     }
     
     private void setTables() {
@@ -438,13 +451,15 @@ public class MainGUI extends javax.swing.JFrame {
         createOrderLabel.setFont(new java.awt.Font("Tahoma", 0, 18)); // NOI18N
         createOrderLabel.setText(bundle.getString("MainGUI.createOrderLabel.text")); // NOI18N
 
-        orderBandSelect.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Five Live", "Kabát", "Horkýže Slíže", "Wohnout", " " }));
+        orderBandSelect.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                orderBandSelectActionPerformed(evt);
+            }
+        });
 
         orderBandLabel.setText(bundle.getString("MainGUI.orderBandLabel.text")); // NOI18N
 
         orderCustomerLabel.setText(bundle.getString("MainGUI.orderCustomerLabel.text")); // NOI18N
-
-        orderCustomerSelect.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Item 1", "Item 2", "Item 3", "Item 4" }));
 
         orderDurationSelect.setModel(new javax.swing.SpinnerNumberModel(1, 1, 12, 1));
 
@@ -714,6 +729,8 @@ public class MainGUI extends javax.swing.JFrame {
         band.setStyles(bandStylesSelect.getSelectedValuesList());
         bandManager.createBand(band);
         
+        orderBandSelect.addItem(band.getName());
+        
         DefaultTableModel bandModel = (DefaultTableModel) bandTable.getModel();
         bandModel.addRow(new Object[]{band.getId().toString(), band.getName(), band.getRegion(), band.getStyles(), band.getPricePerHour(), band.getRate()});
         bandTable.setModel(bandModel);
@@ -730,6 +747,8 @@ public class MainGUI extends javax.swing.JFrame {
         customer.setName(customerNameText.getText());
         customer.setPhoneNumber(customerPhoneText.getText());
         customerManager.createCustomer(customer);
+        
+        orderCustomerSelect.addItem(customer.getName());
         
         DefaultTableModel customerModel = (DefaultTableModel) customerTable.getModel();
         customerModel.addRow(new Object[]{customer.getId().toString(), customer.getName(), customer.getAddress(), customer.getPhoneNumber()});
@@ -782,6 +801,10 @@ public class MainGUI extends javax.swing.JFrame {
         contentPanel.repaint();
         contentPanel.revalidate();
     }//GEN-LAST:event_createOrderButtonActionPerformed
+
+    private void orderBandSelectActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_orderBandSelectActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_orderBandSelectActionPerformed
 
     /**
      * @param args the command line arguments
