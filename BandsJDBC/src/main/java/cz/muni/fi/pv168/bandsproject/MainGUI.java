@@ -9,11 +9,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 
-import java.io.IOException;
-import java.text.SimpleDateFormat;
+
 import java.util.Date;
 import java.util.List;
+import java.util.concurrent.ExecutionException;
 import javax.swing.DefaultComboBoxModel;
+import javax.swing.SwingUtilities;
+import javax.swing.SwingWorker;
 import javax.swing.table.DefaultTableModel;
 
 import org.slf4j.Logger;
@@ -40,6 +42,12 @@ public class MainGUI extends javax.swing.JFrame {
     private List<Customer> customers;
     private List<Lease> orders;
     
+    // SwingWorker
+    private FindAllBands findAllBands;
+    private FindAllCustomers findAllCustomers;
+    private FindAllOrders findAllOrders;
+    
+    
     /**
      * Creates new form MainGUI
      */
@@ -48,11 +56,21 @@ public class MainGUI extends javax.swing.JFrame {
         bandManager = ctx.getBean(BandManager.class);
         customerManager = ctx.getBean(CustomerManager.class);
         leaseManager = ctx.getBean(LeaseManager.class);
-        
+        /*
         bands = bandManager.getAllBands();
         customers = customerManager.getAllCustomers();
         orders = leaseManager.findAllLeases();
-
+        */
+        
+        this.setDefaultCloseOperation(EXIT_ON_CLOSE);
+        
+        findAllBands = new FindAllBands();
+        findAllBands.execute();
+        findAllCustomers = new FindAllCustomers();
+        findAllCustomers.execute();
+        findAllOrders = new FindAllOrders();
+        findAllOrders.execute();
+        
         initComponents();
         setTables();
         
@@ -72,6 +90,69 @@ public class MainGUI extends javax.swing.JFrame {
             dcmCustomer.addElement(customer.getName());
         });
         orderCustomerSelect.setModel(dcmCustomer);
+    }
+    
+    private class FindAllBands extends SwingWorker<List<Band>, Integer> {
+        
+        @Override
+        protected List<Band> doInBackground() throws Exception {
+            return bandManager.getAllBands();
+        }
+
+        @Override
+        protected void done() {
+            try{
+                log.debug("Getting all bands");
+                bands = get();
+            }catch(ExecutionException ex) {
+                log.error("Exception was thrown in FindAllBands in method doInBackGround " + ex.getCause());
+            } catch (InterruptedException ex) {
+                log.error("Method doInBackground has been interrupted in FindAllBands " + ex.getCause());
+                throw new RuntimeException("Operation interrupted in FindAllBands");
+            }
+        }
+    }
+    
+    private class FindAllCustomers extends SwingWorker<List<Customer>, Integer> {
+        
+        @Override
+        protected List<Customer> doInBackground() throws Exception {
+            return customerManager.getAllCustomers();
+        }
+
+        @Override
+        protected void done() {
+            try{
+                log.debug("Getting all customers.");
+                customers = get();
+            }catch(ExecutionException ex) {
+                log.error("Exception was thrown in FindAllCustomers in method doInBackGround " + ex.getCause());
+            } catch (InterruptedException ex) {
+                log.error("Method doInBackground has been interrupted in FindAllCustomers " + ex.getCause());
+                throw new RuntimeException("Operation interrupted in FindAllCustomers");
+            }
+        }
+    }
+    
+    private class FindAllOrders extends SwingWorker<List<Lease>, Integer> {
+        
+        @Override
+        protected List<Lease> doInBackground() throws Exception {
+            return leaseManager.findAllLeases();
+        }
+
+        @Override
+        protected void done() {
+            try{
+                log.debug("Getting all leases.");
+                orders = get();
+            }catch(ExecutionException ex) {
+                log.error("Exception was thrown in FindAllOrders in method doInBackGround " + ex.getCause());
+            } catch (InterruptedException ex) {
+                log.error("Method doInBackground has been interrupted in FindAllOrders " + ex.getCause());
+                throw new RuntimeException("Operation interrupted in FindAllOrders");
+            }
+        }
     }
     
     private void setTables() {
@@ -785,7 +866,7 @@ public class MainGUI extends javax.swing.JFrame {
         Lease order = new Lease();
         Integer bandId = orderBandSelect.getSelectedIndex() + 1;
         order.setBand(bandManager.findBandById(bandId.longValue()));
-        Integer customerId = orderBandSelect.getSelectedIndex() + 1;
+        Integer customerId = orderCustomerSelect.getSelectedIndex() + 1;
         order.setCustomer(customerManager.getCustomer(customerId.longValue()));
         order.setDate((Date)orderDateSelect.getValue());
         order.setDuration(Integer.parseInt(orderDurationSelect.getValue().toString()));
